@@ -113,6 +113,12 @@ round(mtcars$mpg, digits = 0)
 library(data.table)
 
 ## import CSV - first insert your working directory instead of mine
+## Note: if you use an Rproject, your directory may already be set
+## if not an easy way to get the path to the directory (folder)
+## is to navigate to it in the RStudio "Files" tab,
+## then click on the the "Gear" icon and choose "Set As Working Directory"
+## this will run some setwd() code in your console,
+## which you can copy and paste here
 setwd("C:/Users/michelle/Documents/git_repos/MonashHonoursStatistics")
 d <- read.csv("IntroR_sample.csv")
 

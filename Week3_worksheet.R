@@ -159,7 +159,7 @@ ggMarginal(???)
 
 ## Epic Bonus:
 ## Now find a way to show the same scatterplot above, but represent 
-## differences by sex
+## differences by relsta
 ## Hint: First find a way to get the stats separately by relsta
 cor.test(???)
 cor.test(???)
