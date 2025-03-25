@@ -15,7 +15,7 @@ library(tufte)
 # Setup
 
 You can view, download or pull the `R`markdown file for this content here
-https://github.com/michellebyrne1/MonashHonoursStatistics
+https://github.com/jwiley/MonashHonoursStatistics
 
 We will be using a few packages for this content and also the baseline
 data only from the data collection exercise.
@@ -32,7 +32,18 @@ library(visreg)
 ## read in data
 db <- as.data.table(read_sav("[2021] PSY4210 BL.sav")) # baseline
 
-
+# calculate selfesteem
+db[, selfesteem := rowMeans(.SD, na.rm = TRUE) * 4,
+   .SDcols = c("LSE1", "LSE2", "LSE3", "LSE4")]
+# calculate stress
+db [, PSS2 := 6- PSS2r]
+db [, PSS3 := 6- PSS3r] 
+db[, stress := rowMeans(.SD, na.rm = TRUE) * 4,
+   .SDcols = c("PSS1", "PSS2", "PSS3", "PSS4")]
+# calculate neuroticism
+db [, BFI_N1 := 6- BFI_N1r]
+db[, neuroticism := rowMeans(.SD, na.rm = TRUE) * 2,
+   .SDcols = c("BFI_N1", "BFI_N2")]
 
 ``` 
 
@@ -232,18 +243,6 @@ the other predictors.
 # understand the code below but it IS fun to play with
 
 library(plotly)
-# calculate selfesteem
-db[, selfesteem := rowMeans(.SD, na.rm = TRUE) * 4,
-   .SDcols = c("LSE1", "LSE2", "LSE3", "LSE4")]
-# calculate stress
-db [, PSS2 := 6- PSS2r]
-db [, PSS3 := 6- PSS3r] 
-db[, stress := rowMeans(.SD, na.rm = TRUE) * 4,
-   .SDcols = c("PSS1", "PSS2", "PSS3", "PSS4")]
-# calculate neuroticism
-db [, BFI_N1 := 6- BFI_N1r]
-db[, neuroticism := rowMeans(.SD, na.rm = TRUE) * 2,
-   .SDcols = c("BFI_N1", "BFI_N2")]
 
 # linear model
 m <- lm(neuroticism ~ stress + selfesteem, data = db)
@@ -346,13 +345,13 @@ parameters, the mean and standard deviation.
 
 ggplot(data.frame(x = seq(-4, 4, by = .05)), aes(x)) +  
   stat_function(fun = dnorm, args = list(mean = 0, sd = 2),
-                colour = "blue", size = 1) +
+                colour = "blue", linewidth = 1) +
   stat_function(fun = dnorm, args = list(mean = 0, sd = 1),
-                colour = "black", size = 1) +
+                colour = "black", linewidth = 1) +
   stat_function(fun = dnorm, args = list(mean = 0, sd = 0.5),
-                colour = "red", size = 1) +     
+                colour = "red", linewidth = 1) +     
   stat_function(fun = dnorm, args = list(mean = 1, sd = 0.5),
-                colour = "green", size = 1) +
+                colour = "green", linewidth = 1) +
   theme_pubr() +
   xlab("x") + ylab("Density of the normal distribution")
 
@@ -427,7 +426,7 @@ other type of variable and assumed distribution. This means in some
 sense, all GLMs are interpreted like linear regression, which
 facilitates modelling and interpretation.
 
-Now, let's take a look at linear regression in `R` and work through
+Now, let us take a look at linear regression in `R` and work through
 examples running and interpreting the results.
 
 # Linear Regression in `R`
@@ -552,7 +551,7 @@ visreg(m, xvar = "stress", partial = FALSE, rug = FALSE, gg = TRUE) +
 
 ## Categorical Predictors in Linear Regression
 
-`r margin_note("You might find this page helpful for further explanation of dummy coding: https://stats.idre.ucla.edu/other/mult-pkg/faq/general/faqwhat-is-dummy-coding/")`
+`r margin_note("You might find this page helpful for further explanation of dummy coding: https://stats.oarc.ucla.edu/other/mult-pkg/faq/general/faqwhat-is-dummy-coding/")`
 
 In addition to continuous variables, categorical variables can be
 included as predictors / explanatory variables in linear
@@ -579,13 +578,13 @@ linear regression as a predictor, so you do not have to do it
 manually. If the variable is not a factor, you may want to convert it
 to a factor first using `factor()`.
 
-Let's take a look at a simple linear regression with a categorical
+Let us take a look at a simple linear regression with a categorical
 predictor, `sex`. We will store these results in `m2`, for
 model 2. We can also graph the results. 
 
 ```{r, fig.width = 6, fig.height = 4, fig.cap = "simple regression plot from visreg with categorical predictor"}
-db$sex <- db$sex - 1 # recode to 1s and 0s
-db$sex <- factor(db$sex)
+db$sex <- factor(db$sex, levels = c(1, 2), labels = c("males", "females"))
+
 m2 <- lm(neuroticism ~ sex, data = db)
 
 summary(m2)
@@ -636,7 +635,7 @@ The normality assumption is typically tested by comparing the
 residuals from the model against a normal distribution.
 The independence assumption cannot readily be tested, but we normally
 assume it is true if participants are independent of each other (e.g.,
-are not siblings, we don't have repeated measures on the same person,
+are not siblings, we do not have repeated measures on the same person,
 etc.).
 The homogeneity of variance assumption is typically assessed by
 plotting the residuals against predicted values. The expectation is
@@ -694,7 +693,8 @@ assumption of homogeneous variance, one would expect these lines to be
 approximately horizontal and parallel to each other. If they are not
 parallel, that indicates that the variance is larger / smaller for
 some predicted values than for others, known as heterogeneous
-variance. The solid blue line in the middle is a loess smooth line,
+variance. The solid blue line in the middle is a smooth line at the 
+median or 50th percentile,
 which also would ideally be about flat and about zero, to indicate
 that there is no systematic bias in the residuals. Systematic bias can
 occur, for example when for low predicted values, the residuals are
@@ -706,7 +706,7 @@ minimum, 25th percentile, median, 75th percentile, and maximum,
 providing a nice quantitative summary of the residuals and predicted
 values. 
 
-These graph looks fairly good although the loess line is not great. 
+These graph looks fairly good although the median smooth line is not great. 
 The diagnostics are not perfect, but
 real data never are and the degree of variation in the spread of
 residuals is not extreme (but not good). We might be reasonably satisfied that the
@@ -715,7 +715,7 @@ least not terribly violated, although a case could be made that the
 homogeneity assumption is violated. There also do not appear to be extreme
 values in the residuals.
 
-For the sake of example, let's look at another outcome measure. 
+For the sake of example, let us look at another outcome measure. 
 `selfesteem`. Again we will use `stress` as a predictor.
 
 ```{r, fig.width = 9, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Regression model diagnostics. Left panel shows a plot of the residuals to assess normality and they will be highlighted black if an extreme value. The right panel shows a plot of the predicted versus residual values to help assess the homogeneity of variance assumption."}
@@ -732,8 +732,8 @@ These graphs show there are three extreme values, based on
 the current criteria. The homogeneity of variance plot does not appear
 as bad, but the extreme values on the residuals are apparent. At a
 minimum, we would want to remove these extreme values.  We could also try a log
-transformation of the outcome (although you wouldn't do this if the normality actually 
-looks ok - but let's just do it as an example anyway).
+transformation of the outcome (although you would not do this if the normality actually 
+looks ok - but let us just do it as an example anyway).
 
 ```{r, fig.width = 9, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Regression model diagnostics after log transforming the outcome."}
 
@@ -745,7 +745,7 @@ plot(malt2d, ncol = 2, ask = FALSE)
 
 ```
 
-Even after the log transformation, the extreme values remain. Let's
+Even after the log transformation, the extreme values remain. Let us
 remove those. Extreme values are stored and accessible within the
 diagnostics object output, `malt2d`. It shows the scores on the
 outcome, the index (the row in the data the extreme values come from)
@@ -826,13 +826,13 @@ higher neuroticism score,
 `r formatPval(coef(summary(m3))["stress", "Pr(>|t|)"], includeP = TRUE)`.
 
 There 
-`r ifelse(coef(summary(m3))["sex1", "Pr(>|t|)"] < .05, "was", "was not")`
+`r ifelse(coef(summary(m3))["sexfemales", "Pr(>|t|)"] < .05, "was", "was not")`
 a stastistically significant association between sex group and
 neuroticism, controlling for stress. Compared to male participants, female participants had 
-`r sprintf("%0.2f", round(coef(m3)[["sex1"]], 2))` 
-[95% CI `r sprintf("%0.2f - %0.2f", round(confint(m3)["sex1", 1], 2), round(confint(m3)["sex1", 2], 2))`]
+`r sprintf("%0.2f", round(coef(m3)[["sexfemales"]], 2))` 
+[95% CI `r sprintf("%0.2f - %0.2f", round(confint(m3)["sexfemales", 1], 2), round(confint(m3)["sexfemales", 2], 2))`]
 higher neuroticism scores, 
-`r formatPval(coef(summary(m3))["sex1", "Pr(>|t|)"], d = 2, includeP = TRUE)`.
+`r formatPval(coef(summary(m3))["sexfemales", "Pr(>|t|)"], d = 2, includeP = TRUE)`.
 Overall, stress and sex group explained 
 `r sprintf("%0.1f", summary(m3)$adj.r.squared * 100)`% of the variance
 in neuroticism.
@@ -926,17 +926,11 @@ It is very easy to include interactions in `R`. Inside of a
 regression formula, we use the `*` operator, which expands to mean,
 give me the main effects and the interactions between these
 variables. Here is an example evaluating an interaction between stress
-and sex on neuroticism. Note that when there are interactions,
-`modelTest()` does not deal well with categorical predictors that are
-automatically dummy coded. The solution is to manually dummy code.
-The following code estimates the model and makes a nice summary with
-effect sizes.
+and sex on neuroticism.
 
 ```{r, results = "asis"}
 
-db[, SexDummy := ifelse(sex == "1", 1L, 0L)]
-
-mint <- lm(neuroticism ~ stress * SexDummy, data = db)
+mint <- lm(neuroticism ~ stress * sex, data = db)
 knitr::kable(APAStyler(modelTest(mint)))
 
 ``` 
@@ -945,7 +939,7 @@ We can also use `visreg()` to make a nice interaction plot.
 
 ```{r, fig.width = 7, fig.height = 5, fig.cap = "moderated regression plot from visreg"}
 
-visreg(mint, xvar = "stress", by = "SexDummy", partial = FALSE, rug = FALSE,
+visreg(mint, xvar = "stress", by = "sex", partial = FALSE, rug = FALSE,
        overlay = TRUE, gg = TRUE) +
   theme_pubr() +
   ggtitle("A moderated multiple regression")
@@ -962,7 +956,7 @@ interaction, re-run the model and interpret the results. However, to
 show what could be interpreted if there was a significant
 interaction, we will proceed.
 There was a significant simple effect of stress
-on neuroticism, such that for male participants (i.e., when SexDummy =
+on neuroticism, such that for male participants (i.e., when sexfemales =
 0), each one unit higher stress was associated with 0.44 higher
 neuroticism [95% CI .15 - .73], p = .003 and this was a small
 effect, $f^2 = 0.07$. There was no simple effect
@@ -973,7 +967,6 @@ interaction showed that the pattern was that the association between
 stress and neuroticism was about the same in male and female participants.
 The overall model explained 37% of the variance in neuroticism
 in the sample.
-
 
 It also is possible to have an interaction between two continuous
 variables. The `R` code is virtually identical, but we can no longer

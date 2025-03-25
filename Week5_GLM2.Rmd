@@ -31,6 +31,7 @@ library(ggplot2)
 library(ggpubr)
 library(visreg)
 library(survey)
+library(marginaleffects)
 
 ## read in data
 db <- as.data.table(read_sav("[2021] PSY4210 BL.sav")) # baseline
@@ -59,7 +60,7 @@ db[, SelfesteemHigh := as.integer(selfesteem >= 3.75)]
 
 ## read in some example data from the internet
 ## (requires internet connection to run)
-dcount <- fread("https://stats.idre.ucla.edu/stat/data/poisson_sim.csv")
+dcount <- fread("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
 
 ``` 
 
@@ -1098,7 +1099,6 @@ identical to the steps for a single predictor, except that the
 datasets must include all predictors but you only increase the values
 of one predictor at a time.
 
-
 ```{r}
 
 ## pick h value for difference, store that in variable h
@@ -1143,6 +1143,20 @@ neuroticism by one unit on average is predicted to result in a
 `r mean(neuro.diffprob)` increase in the probability of being high
 stress.
 
+# Using a Function
+
+That manual way of calculating is good for learning and understanding
+exactly what we mean by an average marginal effect. However, it is
+cumberson to do in practice. Fortunately, there is a function in the
+`marginaleffects` package that will do all that for us.
+
+Here you can see that we get the same results as we did the manual way.
+In addition we get confidence itnervals and a p-value.
+
+```{r}
+avg_slopes(mlog3)
+```
+
 # Summary Table
 
 Here is a little summary of some of the functions used in this
@@ -1150,6 +1164,7 @@ topic.
 
 | Function       | What it does                                 |
 |----------------|----------------------------------------------|
+| `avg_slopes()` | automatically calculate average marginal effects or average changes in probability |
 | `glm()`  | Fits a generalized linear regression model, with `family=poisson()` or `family=binomial()` for poisson and logistic regression | 
 | `coef()`  | Extracts coefficients from a regression model | 
 | `confint()`  | Calculates confidence intervals (95% by default) for a regression model | 
