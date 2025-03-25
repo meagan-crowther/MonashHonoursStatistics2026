@@ -8,7 +8,7 @@ library(ggpubr)
 library(visreg)
 library(survey)
 
-dcount <- fread("https://stats.idre.ucla.edu/stat/data/poisson_sim.csv")
+dcount <- fread("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
 
 ### 1. Poisson ### 
 
@@ -119,3 +119,7 @@ diffprob <- ???
 
 ## calculate the average marginal effect
 mean(???)
+
+## OPTIONAL: you can cross check your work using
+library(marginaleffects)
+avg_slopes(???)
