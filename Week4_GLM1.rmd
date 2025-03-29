@@ -33,7 +33,7 @@ library(visreg)
 db <- as.data.table(read_sav("[2021] PSY4210 BL.sav")) # baseline
 
 # calculate selfesteem
-db[, selfesteem := rowMeans(.SD, na.rm = TRUE) * 4,
+db[, selfesteem := rowMeans(.SD, na.rm = TRUE),
    .SDcols = c("LSE1", "LSE2", "LSE3", "LSE4")]
 # calculate stress
 db [, PSS2 := 6- PSS2r]
@@ -42,7 +42,7 @@ db[, stress := rowMeans(.SD, na.rm = TRUE) * 4,
    .SDcols = c("PSS1", "PSS2", "PSS3", "PSS4")]
 # calculate neuroticism
 db [, BFI_N1 := 6- BFI_N1r]
-db[, neuroticism := rowMeans(.SD, na.rm = TRUE) * 2,
+db[, neuroticism := rowMeans(.SD, na.rm = TRUE),
    .SDcols = c("BFI_N1", "BFI_N2")]
 
 ``` 
@@ -543,7 +543,7 @@ coordinates and the size until you are happy with it.
 
 visreg(m, xvar = "stress", partial = FALSE, rug = FALSE, gg = TRUE) +
   theme_pubr() +
-  annotate("text", x = 15, y = 8, label = "b = 0.XX, p < .0001", size = 4) + 
+  annotate("text", x = 15, y = 3, label = "b = 0.XX, p < .0001", size = 4) + 
   ggtitle("Linear regression of neuroticism on stress",
           subtitle = "Shaded region shows 95% confidence interval.")
 # Can you fill in the b coefficient in the label from the summary of m above?

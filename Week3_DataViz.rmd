@@ -820,23 +820,23 @@ https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
 ```{r compute more variables}
 
 ## compute the personality variables if you haven't already done so
-db [, BFI_N1 := 6- BFI_N1r]
+db [, BFI_N1 := 6 - BFI_N1r]
 db[, neuroticism:= rowMeans(.SD, na.rm = TRUE),
 .SDcols = c("BFI_N1", "BFI_N2")]
 
-db [, BFI_E1 := 6- BFI_E1r]
+db [, BFI_E1 := 6 - BFI_E1r]
 db[, extraversion := rowMeans(.SD, na.rm = TRUE),
    .SDcols = c("BFI_E1", "BFI_E2")]
 
-db [, BFI_O1 := 6- BFI_O1r]
+db [, BFI_O1 := 6 - BFI_O1r]
 db[, openness := rowMeans(.SD, na.rm = TRUE),
    .SDcols = c("BFI_O1", "BFI_O2")]
 
-db [, BFI_C1 := 6- BFI_C1r]
+db [, BFI_C1 := 6 - BFI_C1r]
 db[, conscientiousness := rowMeans(.SD, na.rm = TRUE),
    .SDcols = c("BFI_C1", "BFI_C2")]
 
-db [, BFI_A2 := 6- BFI_A2r]
+db [, BFI_A2 := 6 - BFI_A2r]
 db[, agreeableness := rowMeans(.SD, na.rm = TRUE),
    .SDcols = c("BFI_A1", "BFI_A2")]
 
