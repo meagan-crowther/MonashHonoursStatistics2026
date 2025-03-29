@@ -12,7 +12,7 @@
 
 <meta name="author" content="Joshua F. Wiley / Michelle Byrne / Pei Hwa Goh" />
 
-<meta name="date" content="2025-03-25" />
+<meta name="date" content="2025-03-29" />
 
 <title>Generalized Linear Models 2</title>
 
@@ -91,7 +91,7 @@ if (window.hljs) {
 
 <h1 class="title toc-ignore">Generalized Linear Models 2</h1>
 <h4 class="author">Joshua F. Wiley / Michelle Byrne / Pei Hwa Goh</h4>
-<h4 class="date">2025-03-25</h4>
+<h4 class="date">2025-03-29</h4>
 
 
 <div id="TOC">
@@ -162,22 +162,22 @@ db &lt;- as.data.table(read_sav(&quot;[2021] PSY4210 BL.sav&quot;)) # baseline
 ## click on it to load your saved db datafile here
 
 ## compute a stress variable if you haven&#39;t already 
-db [, PSS2 := 6- PSS2r]
-db [, PSS3 := 6- PSS3r] 
-db[, stress := rowMeans(.SD, na.rm = TRUE),
+db [, PSS2 := 6 - PSS2r]
+db [, PSS3 := 6 - PSS3r] 
+db[, stress := rowMeans(.SD, na.rm = TRUE) * 4,
    .SDcols = c(&quot;PSS1&quot;, &quot;PSS2&quot;, &quot;PSS3&quot;, &quot;PSS4&quot;)]
 
 ## compute a self-esteem variable if you haven&#39;t already 
-db[, selfesteem:= rowMeans(.SD, na.rm = TRUE),
-.SDcols = c(&quot;LSE1&quot;, &quot;LSE2&quot;, &quot;LSE3&quot;, &quot;LSE4&quot;)]
+db[, selfesteem := rowMeans(.SD, na.rm = TRUE),
+  .SDcols = c(&quot;LSE1&quot;, &quot;LSE2&quot;, &quot;LSE3&quot;, &quot;LSE4&quot;)]
 
 ## compute a neuroticism variable if you haven&#39;t already 
-db [, N1 := 6- BFI_N1r]
-db[, neuroticism:= rowMeans(.SD, na.rm = TRUE),
-.SDcols = c(&quot;N1&quot;, &quot;BFI_N2&quot;)]
+db [, N1 := 6 - BFI_N1r]
+db[, neuroticism := rowMeans(.SD, na.rm = TRUE),
+  .SDcols = c(&quot;N1&quot;, &quot;BFI_N2&quot;)]
 
 ## create some binary variables
-db[, StressHigh := as.integer(stress &gt;= 2.5)]
+db[, StressHigh := as.integer(stress &gt;= 10)]
 db[, SelfesteemHigh := as.integer(selfesteem &gt;= 3.75)]
 
 ## read in some example data from the internet
@@ -663,7 +663,7 @@ variable.</p>
 ## 1:     StressHigh             
 ## 2:              0   55 (38.7%)
 ## 3:              1   87 (61.3%)
-## 4:         stress  2.57 (0.64)
+## 4:         stress 10.27 (2.58)
 ## 5: SelfesteemHigh             
 ## 6:              0   70 (49.3%)
 ## 7:              1   72 (50.7%)
@@ -684,7 +684,7 @@ only 11 people reported both low self esteem and low stress.</p>
   data = db, strict=FALSE)</code></pre>
 <pre><code>##                   0 M (SD)/N (%) 1 M (SD)/N (%)
 ##            &lt;char&gt;         &lt;char&gt;         &lt;char&gt;
-## 1:         stress    1.95 (0.36)    2.96 (0.45)
+## 1:         stress    7.82 (1.43)   11.83 (1.82)
 ## 2: SelfesteemHigh                              
 ## 3:              0     11 (20.0%)     59 (67.8%)
 ## 4:              1     44 (80.0%)     28 (32.2%)
