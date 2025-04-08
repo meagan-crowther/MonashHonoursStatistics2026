@@ -40,6 +40,10 @@ aggr(???)
 
 # To do MI, we have to make sure the class of all the variables are correct.
 # Because they were imported from SPSS, they're all wrong. How do we change them?
+# if these are problems usually you can convert to numeric/integer/factor like
+# d[, v := as.numeric(v)]
+# d[, v := as.integer(v)]
+# d[, v := as.factor(v)]
 ???
 
 ### FROM HERE ONWARDS, ANSWERS WILL NOT BE UPLOADED, AS THEY ARE TOO SIMILAR 
