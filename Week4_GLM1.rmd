@@ -832,7 +832,7 @@ neuroticism, controlling for stress. Compared to male participants, female parti
 `r sprintf("%0.2f", round(coef(m3)[["sexfemales"]], 2))` 
 [95% CI `r sprintf("%0.2f - %0.2f", round(confint(m3)["sexfemales", 1], 2), round(confint(m3)["sexfemales", 2], 2))`]
 higher neuroticism scores, 
-`r formatPval(coef(summary(m3))["sexfemales", "Pr(>|t|)"], d = 2, includeP = TRUE)`.
+`r formatPval(coef(summary(m3))["sexfemales", "Pr(>|t|)"], d = 3, includeP = TRUE)`.
 Overall, stress and sex group explained 
 `r sprintf("%0.1f", summary(m3)$adj.r.squared * 100)`% of the variance
 in neuroticism.
