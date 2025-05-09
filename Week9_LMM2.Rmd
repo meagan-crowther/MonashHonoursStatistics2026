@@ -144,21 +144,21 @@ the lines, shown graphically in the following figure.
 ggarrange(
 ggplot(expand.grid(x = c(0, 10), y = c(0, 10)), aes(x, y)) +
   geom_point(colour = "white") + 
-  geom_abline(intercept = 1, slope = 1, colour = "black", size = 1) +
-  geom_abline(intercept = 2, slope = 1, colour = "yellow", size = 1) +
-  geom_abline(intercept = 3, slope = 1, colour = "blue", size = 1) +
-  geom_abline(intercept = 4, slope = 1, colour = "purple", size = 1) +  
+  geom_abline(intercept = 1, slope = 1, colour = "black", linewidth = 1) +
+  geom_abline(intercept = 2, slope = 1, colour = "yellow", linewidth = 1) +
+  geom_abline(intercept = 3, slope = 1, colour = "blue", linewidth = 1) +
+  geom_abline(intercept = 4, slope = 1, colour = "purple", linewidth = 1) +
   theme_pubr() +
   coord_cartesian(xlim = c(0, 9), ylim = c(0, 10), expand=FALSE) +
   ggtitle("Random Intercepts"),
 ggplot(expand.grid(x = c(0, 10), y = c(0, 10)), aes(x, y)) +
   geom_point(colour = "white") + 
-  geom_abline(intercept = 1, slope = 1, colour = "black", size = 1) +
-  geom_abline(intercept = 2, slope = .5, colour = "yellow", size = 1) +
-  geom_abline(intercept = 3, slope = 1.5, colour = "blue", size = 1) +
-  geom_abline(intercept = 4, slope = .5, colour = "purple", size = 1) +  
+  geom_abline(intercept = 1, slope = 1, colour = "black", linewidth = 1) +
+  geom_abline(intercept = 2, slope = .5, colour = "yellow", linewidth = 1) +
+  geom_abline(intercept = 3, slope = 1.5, colour = "blue", linewidth = 1) +
+  geom_abline(intercept = 4, slope = .5, colour = "purple", linewidth = 1) +
   theme_pubr() +
-  coord_cartesian(xlim = c(0, 9), ylim = c(0, 10), expand=FALSE) +
+  coord_cartesian(xlim = c(0, 9), ylim = c(0, 10), expand = FALSE) +
 ggtitle("Random Slopes"),
 ncol = 1, nrow = 2)
 
@@ -810,7 +810,7 @@ predicted stress scores.
 
 ```{r, error = TRUE}
 
-m2 <- lmer(dStress ~ Benergy + Wenergy + 
+m2 <- lmer(dStress ~ Benergy + Wenergy +
              (Wenergy | ID),
            data = dm)
 
@@ -852,41 +852,65 @@ This figure shows the negative fixed effect coefficient for `Wenergy` graphicall
 
 ## Conditional
 
-We can use `visreg()` function to graph conditional predictions as
+We can graph conditional predictions as
 well. We will make a few modifications compared to the marginal
 graph.
 
-1. We specify that we want lines `by = "ID"` to indicate
-   we should get a separate line for each ID.
-2. We specify particular `breaks`, these are the breaks for the `by`
-   variable and in this case indicate which specific IDs should be
-   plotted. To see available IDs, we look at `unique(dm$ID)`. I've
-   chosen a few IDs to show for example. You could pick others.
-3. We specify the `re.form` argument. If we want to incorporate all
-   random effects in the predictions, we should specify the same
-   formula for random effects as we did in the model. If we want to
-   only incorporate some but not all random effects, we can specify a
-   modified formula, we'll look at some examples a bit later.
+We specify specific IDs should be plotted.
+To see available IDs, we look at `unique(dm$ID)`. I've
+chosen a few IDs to show for example. You could pick others.
 
-With those changes we get the following figure. Each ID is separated
-into a separate plot panel.
+For this we generate predicted values using the `predict()` function.
+We specify the `re.form` argument. It defaults to including 
+all random effects, but more specifics can be chosen. See:
+`?predict.merMod` for more details.
 
-```{r, fig.fullwidth = TRUE}
+To make predictions, we have to pick values for every predictor.
+To start, we use a sequence of values for `Wenergy` from the minimum to the
+maximum of `Wenergy` in the dataset. We also need to pick a value for
+`Benergy`. We can use the mean of `Benergy` in the dataset.
+If there were other predictors or covariates, we would need to 
+pick values for those as well. Often, the mean/median or the 
+most frequent value is used for categorical predictors.
+
+We use the `expand.grid()` function to create a combinations
+of our predictor values and IDs.
+First we predict using all random effects, and save that in a variabled called
+`YhatAllRE`. We then use the `re.form` argument to specify
+we only want the random intercept, which we save in a variable 
+called `YhatIntRE`. Finally, we set `re.form = NA` to
+indicate we do not want any random effects, which we save in
+a variable called `YhatNoRE`.
+
+```{r}
 
 unique(dm$ID)
 
-visreg(m2, xvar = "Wenergy", by = "ID",
-       breaks = c(10, 35, 54, 64, 99, 101),
-       re.form = ~ (Wenergy | ID),
-       partial = FALSE, rug = FALSE,
-       gg = TRUE,
-       xlab = "Within Energy\n(deviations from own average)",
-       ylab = "Predicted Stress") + 
-  theme_pubr() +
-  ggtitle("Conditional Random Intercept and Slope")
+newdata <- expand.grid(
+  Wenergy = seq(from = min(dm$Wenergy), to = max(dm$Wenergy), length.out = 10),
+  Benergy = mean(dm$Benergy),
+  ID = c(10, 35, 54, 64, 99, 101))
+
+## default is include all random effects
+newdata$YhatAllRE <- predict(
+  m2, newdata = newdata,
+  type = "response")
+
+## only random intercept
+newdata$YhatIntRE <- predict(
+  m2, newdata = newdata,
+  re.form = ~ (1 | ID),
+  type = "response")
+## no random effects
+newdata$YhatNoRE <- predict(
+  m2, newdata = newdata,
+  re.form = NA,
+  type = "response")
 
 ```
 
+Next we can plot the results using `ggplot2` predicting using all 
+random effects.
 Note that these are not raw regression lines per person, they are
 conditional predictions from the LMM, so they will include shrinkage
 of the random intercept and slopes to the overall sample average
@@ -897,115 +921,43 @@ although in the marginal plots section earlier, we saw that on average
 there is a negative association between within person energy and stress,
 not everyone exactly has a negative predicted slope (10 looks a little positive).
 
-If we did not want to incorporate all random effects in the
-predictions, we could modify the `re.form`. This does not change the
-LMM we fit, it merely changes which random effects are incorporated
-into the predictions from the regression model and then plotted.
-For example, we could only include the intercept, which gives us the
-following figure:
-
 ```{r, fig.fullwidth = TRUE}
 
-visreg(m2, xvar = "Wenergy", by = "ID",
-       breaks = c(10, 35, 54, 64, 99, 101),
-       re.form = ~ (1 | ID),
-       partial = FALSE, rug = FALSE,
-       gg = TRUE,
-       xlab = "Within Energy\n(deviations from own average)",
-       ylab = "Predicted Stress") + 
-  theme_pubr() +
-  ggtitle("Conditional Random Intercept")
-
+ggplot(newdata, aes(x = Wenergy, y = YhatAllRE, colour = factor(ID))) +
+  geom_line() +
+  labs(x = "Within Energy\n(deviations from own average)",
+       y = "Predicted Stress") +
+  ggtitle("Conditional Random Intercept and Slope") +
+  theme_pubr() + facet_wrap(~ID)
 ```
 
+Here we plot using the random intercept only.
 What this figure showed is each individual IDs own predicted
 intercept, but it used the average marginal slope for within person
 mood and stress for all IDs.
 
-Finally, if we leave out the `re.form` section all together, we get
-the marginal intercept and marginal slope, which is just the same as
+```{r, fig.fullwidth = TRUE}
+ggplot(newdata, aes(x = Wenergy, y = YhatIntRE, colour = factor(ID))) +
+  geom_line() +
+  labs(x = "Within Energy\n(deviations from own average)",
+       y = "Predicted Stress") +
+  ggtitle("Conditional Random Intercept Only") +
+  theme_pubr() + facet_wrap(~ID)
+```
+
+Finally we plot using no random effects.
+We get the marginal intercept and marginal slope, which is just the same as
 our marginal graph but repeated for each ID, a fairly useless figure,
-but it highlights what happens if you forget to include `re.form` in
-your conditional graph.
+but it highlights what the marginal (or fixed effects only) predictions mean.
 
 ```{r, fig.fullwidth = TRUE}
-
-visreg(m2, xvar = "Wenergy", by = "ID",
-       breaks = c(10, 35, 54, 64, 99, 101),
-       partial = FALSE, rug = FALSE,
-       gg = TRUE,
-       xlab = "Within Energy\n(deviations from own average)",
-       ylab = "Predicted Stress") + 
-  theme_pubr() +
-  ggtitle("Unconditional (marginal) only")
-
-
+ggplot(newdata, aes(x = Wenergy, y = YhatNoRE, colour = factor(ID))) +
+  geom_line() +
+  labs(x = "Within Energy\n(deviations from own average)",
+       y = "Predicted Stress") +
+  ggtitle("No Random Effects") +
+  theme_pubr() + facet_wrap(~ID)
 ```
-
-If you don't want to look at specific IDs too carefully but instead
-want to get some sense of the overall variation or you have small
-number of IDs, you can overlay all the lines together by specifying 
-`overlay = TRUE`.
-
-```{r}
-
-visreg(m2, xvar = "Wenergy", by = "ID",
-       breaks = c(10, 35, 54, 64, 99, 101),
-       re.form = ~ (Wenergy | ID),
-       partial = FALSE, rug = FALSE,
-       gg = TRUE,
-       xlab = "Within Energy\n(deviations from own average)",
-       ylab = "Predicted Stress",
-       overlay = TRUE) + 
-  theme_pubr()
-
-```
-
-To see the overall variation in conditional intercepts and slopes, we
-could set the breaks equal to all the IDs by using:
-`breaks = unique(dm$ID)`.
-
-```{r}
-
-visreg(m2, xvar = "Wenergy", by = "ID",
-       breaks = unique(dm$ID),
-       re.form = ~ (Wenergy | ID),
-       partial = FALSE, rug = FALSE,
-       gg = TRUE,
-       xlab = "Within Energy\n(deviations from own average)",
-       ylab = "Predicted Stress",
-       overlay = TRUE) + 
-  theme_pubr()
-
-``` 
-
-With so many different people, we probably do not care about or want
-the legend, we can turn that off in `ggplot2` by adding no position to
-the legend as shown in the following.
-
-
-```{r}
-
-visreg(m2, xvar = "Wenergy", by = "ID",
-       breaks = unique(dm$ID),
-       re.form = ~ (Wenergy | ID),
-       partial = FALSE, rug = FALSE,
-       gg = TRUE,
-       xlab = "Within Energy\n(deviations from own average)",
-       ylab = "Predicted Stress",
-       overlay = TRUE) + 
-  theme_pubr() +
-  theme(legend.position = "none")
-
-``` 
-
-What this figure helps show is how both the random intercept and slope
-influence the results and the individual differences in both level of
-stress and slope of stress on within person energy in the data. In this
-case, for example, it seems that the individual differences in level
-of stress may be larger than the individual differences in slope. With
-a few exceptions, a lot of the slopes are *relatively* similar, albeit
-not exactly the same.
 
 # Summary
 
@@ -1038,6 +990,7 @@ Key points to take away conceptually are:
 | `confint()` | calculate confidence intervals for a LMM  | 
 | `visreg()` | create marginal or conditional graphs from a LMM  | 
 | `modelDiagnostics()` | evaluate model diagnostics for LMMs including of multivariate normality  | 
+| `predict()` | generate predictions from the model with or without random effects used to predict  |
 | `str()` | check the class / structure of data useful to find odd variable types  | 
 | `lmerControl()` | way to change the algorithm used during model estimation and its options to help solve convergence issues  | 
 

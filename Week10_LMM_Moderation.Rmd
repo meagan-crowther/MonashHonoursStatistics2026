@@ -170,7 +170,7 @@ The corresponding `R` code is:
 
 ```{r}
 
-summary(lmer(dEnergy~ loneliness + dStress + (dStress | ID), data = dm))
+summary(lmer(dEnergy ~ loneliness + dStress + (dStress | ID), data = dm))
 
 ``` 
 
@@ -573,18 +573,18 @@ into the code.].
 ```{r}
 
 visreg(m, xvar = "dStress",
-       by = "neuroticism", overlay=TRUE,
+       by = "neuroticism", overlay = TRUE,
        breaks = c(3.46-1.11, 3.46+1.11),
-       partial = FALSE, rug = FALSE, gg=TRUE,
+       partial = FALSE, rug = FALSE, gg = TRUE,
        xlab = "Daily Stress",
        ylab = "Predicted Daily Energy") +
   scale_color_manual(values = c("2.35" = "black", "4.57" = "grey70")) +
   theme_pubr() +
-  guides(colour = FALSE, fill = FALSE) +
+  guides(colour = "none", fill = "none") +
   annotate(geom = "text", x = 3.2, y = 3.9, label = "High Neuroticism: b = -0.07 [-0.23, 0.10], p = .447",
-           angle = -12) + 
+           angle = -9) + 
   annotate(geom = "text", x = 4, y = 4.4, label = "Low Neuroticism: b = -0.21 [-0.36, -0.06], p = .005",
-           angle = -33)
+           angle = -22)
 
 ```
 
@@ -615,7 +615,7 @@ daily energy levels and self-esteem with sex as a moderator.
 
 ```{r}
 
-mconcat<- lmer(dSE ~ dEnergy*sex + (1| ID), data = dm) 
+mconcat <- lmer(dSE ~ dEnergy*sex + (1| ID), data = dm) 
 
 ```
 
@@ -760,7 +760,7 @@ conscientiousness x 2 levels of Int_Str).
 
 ```{r}
 
- dm[, Int_Str := factor(
+dm[, Int_Str := factor(
   Int_Str,
   levels = c(0,1),
   labels = c("No interaction with stranger", "Interacted with stranger"))]
