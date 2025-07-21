@@ -1,25 +1,71 @@
 ---
-title: "Working with Data"
-author: "Joshua F. Wiley - last updated Michelle Byrne"
+title: "PSY4210: Working with Data"
+author: 
+  - name: Joshua F. Wiley
+    email: joshua.wiley@monash.edu
+  - name: Michelle Byrne
 date: "`r Sys.Date()`"
-output:
-  tufte::tufte_html: 
+format:
+  html:
     toc: true
-    number_sections: true
+    number-sections: true
+    embed-resources: true
+    anchor-sections: true
+    smooth-scroll: true
 ---
-```{r, include=FALSE, echo=FALSE}
-#install.packages("tufte",repos = "http://cran.us.r-project.org")
-library(tufte)
-```
+
+# Summary & Key Points
+
+:::{.callout-note collapse="false"}
+## Key Terms
+
+- Objects: Containers for storing data in R.
+- Logical Values: Boolean values (`TRUE`, `FALSE`).
+- Factor Variables: Discrete variables with levels and labels.
+- Wide Format: Data stored with separate columns for each time point.
+- Long Format: Data stored with multiple rows per ID for each time point.
+:::
+
+:::{.callout-note collapse="false"}
+## Key Concepts
+
+- `R` can perform arithmetic operations and store results in objects we name.
+- Objects can hold numbers, vectors, datasets, or results for later use.
+- Vectors are created using `c()` and operations on vectors apply to each element.
+- Logical operators return logical/boolean values (`TRUE`, `FALSE`) and can be combined using `&` (AND) and `|` (OR).
+- Data can be subset using logical conditions. The order of operations matters when chaining subsetting steps.
+- Common data types include Logical, Integer, Numeric, Character, Date, and Factor.
+- Dates are often stored as character strings and need conversion using `as.Date()`.
+- Factors are a way to represent discrete variables in `R` and can be created using `factor()`.
+- Merging data joins datasets using the `merge()` function, with types of joins including Natural, Full Outer, Left Outer, and Right Outer.
+- Reshaping data involves converting between wide and long formats using `reshape()`.
+:::
+
+:::{.callout-note collapse="true"}
+## Key Functions or Operators
+
+- Arithmetic operations: `+`, `-`, `*`, `/`, `^`.
+- Rounding numbers: `round()`.
+- Assignment: `<-` for objects, `:=` for `data.table`.
+- Common logical operators: `<`, `<=`, `>`, `>=`, `==`, `!=`, `%in%`, `%!in%`, `&`, `|`.
+- More operators (from `extraoperators` package): `%l%`, `%le%`, `%g%`, `%ge%`, `%gl%`, `%gel%`, `%gle%`, `%gele%`, `%c%`
+- Checking missing values: `is.na()`.
+- Converting dates: `as.Date()`.
+- Extracting date components: `weekdays()`, `months()`, `quarters()`.
+- Summarizing data: `summary()`.
+- Creating factors: `factor()`.
+- Frequency tables: `table()`.
+- Merging datasets: `merge()`.
+- Checking duplicates: `anyDuplicated()`, `duplicated()`.
+- Finding unique values: `unique()`.
+- Reshaping data: `reshape()`.
+:::
 
 # Intro
 
-`r margin_note("Core ideas and code are in the main document. Extra information that may help understanding but is not the big picture I will go in margin notes, like this.")`
-
-Note from Michelle: Please make sure that you have downloaded the `R`markdown file for the lecture by pulling the most recent git repo
-[https://github.com/michellebyrne1/MonashHonoursStatistics/blob/master/Week2_WorkData.rmd](https://github.com/michellebyrne1/MonashHonoursStatistics/blob/master/Week2_WorkData.rmd)
-You can follow along with the pre-recorded lecture videos for Week 2, or you can read this markdown (in HTML format) independently, and follow along by executing the code in R Studio using the markdown (RMD) file.
-
+Please make sure that you have downloaded the Quarto file (.qmd) for the lecture by pulling the most recent git repo
+<https://github.com/JWiley/MonashHonoursStatistics/blob/master/Week2_WorkData.qmd>
+You can follow along with the pre-recorded lecture videos for Week 2, or you can read this markdown (in HTML format) independently, and follow along by executing the code in R Studio using the markdown (qmd) file.
 
 # Basic `R` Use
 
@@ -36,7 +82,12 @@ As a brief refresher, we'll start just by using `R` as a basic calculator.
 3^2 # powers [2 squared]
 ```
 
-`r margin_note("Objects in R can be almost anything. They can be a single number, a vector or set of numbers, the results from a regression, a graph, a dataset. You can have many objects at the same time in your worksapce, which can be a useful way to save results or store something for later use.")`
+::: {.callout-tip collapse="true"}
+## Objects in `R`
+
+Objects in R can be almost anything. They can be a single number, a vector or set of numbers, the results from a regression, a graph, a dataset. You can have many objects at the same time in your worksapce, which can be a useful way to save results or store something for later use.
+:::
+
 In `R` many things you do with an individual number can be done with a
 vector, a set of numbers. Here's a quick refresher on creating
 vectors, using `c()` and on storing them in an object, here I used
@@ -56,17 +107,20 @@ x ## view x
 x + 2 ## add 2 to every element of x
 ```
 
-`r margin_note("Computers do not work quite like people or
+::: {.callout-tip collapse="true"}
+## Numbers in computers
+
+Computers do not work quite like people or
 regular math. Usually, numbers are represented using 
 floating-point arithmetic (https://en.wikipedia.org/wiki/Floating-point_arithmetic)
 often a binary representation is used as much in the computing world
-is based on bits stored in 0s and 1s. For example, with a binary
-based, 1/5 cannot be represented exactly. An implication of this is
-that sometimes numbers are not represented in R quite like you might
-think. For example: 1/5 == 0.2000000000000001 is evaluated as false
-but 1/5 == 0.20000000000000001 is evaluated as true. The default
-precision for floating points in R cannot distinguish those two
-numbers.")`
+is based on bits stored in 0s and 1s. 
+This can mean that some numbers cannot be represented exactly.
+If you try to check whether something is exactly equal to a number,
+sometimes, surprisingly, it may fail. This can be 
+because of how it has been presented in the computer.
+:::
+
 Finally, here are a few quick tips on formatting `R` output.
 Let's say we have a number with lots of decimal points, we might not
 always need all that precision.
@@ -80,14 +134,18 @@ difference is that `options()` actually uses
 so you will not get a fixed number of decimal points, rather you get a
 fixed number of significant figures.
 
-`r margin_note("The round function has two main arguments (i.e., pieces
+::: {.callout-tip collapse="true"}
+## The `round()` function
+
+The round function has two main arguments (i.e., pieces
 of input it needs from you). The first is the number or vector to be
 rounded. It can be a single number or a whole vector of numbers. The
 second is how many digits you want R to use in the rounding.
 The results may not always print the number of digits you requested,
 which may be confusing. This can happen when one of the digits rounds
 to 0 (e.g., 1.199 rounds to 1.20 and the 0 would be dropped so
-1.2).")`
+1.2).
+:::
 
 ```{r format}
 
@@ -131,11 +189,11 @@ d <- as.data.table(aces_daily)
 
 ## Operators 
 
-`r margin_note("In software, logical values and logical operators are
+In software, logical values and logical operators are
 often used to refer to things that return a boolean value. Booleans
 are one of two values, conventionally: TRUE or FALSE. By
 convention if you do any arithmetic on them, TRUE is treated as 1
-and FALSE is treated as 0.")`
+and FALSE is treated as 0.
 
 A lot of data management involves using logical operators. Operators
 take data on the left hand side and a few options arguments on the
@@ -147,9 +205,10 @@ reasons. You might want to find outliers, values that are greater than
 or less than a specific score, check if values fall within the
 expected range, recode continuous variables into categorical variables
 (low, medium, high, etc.). Much of this work is underpinned by logical
-operators. Here is a list of some operators from `R` and expanded by
-the `extraoperators` package.
+operators. 
 
+:::{.callout-tip collapse="true"}
+## Operators from `R` and `extraoperators` package
 
 | Operator         | What it does                                      |
 |------------------|---------------------------------------------------|
@@ -169,7 +228,7 @@ the `extraoperators` package.
 | `%!in%`OR `%nin%`| Not in                                            |
 | `%c%`            | Chain operations on the RHS together              |
 | `%e%`            | Set operator, to use set notation                 |
-
+:::
 
 ## Subsetting Data
 
@@ -338,9 +397,12 @@ d2[, .(UserID, STRESS)] ## IDs and number of obs
 
 ```
 
-`r margin_note("Here, the order is: first, remove missing stress
+::: {.callout-tip collapse="true"}
+## Reading Chained `data.table` Operations
+Here, the order is: first, remove missing stress
 observations, second take only surveys/rows where stress scores > 3,
-third, count how many observations are not missing by ID.")`
+third, count how many observations are not missing by ID.
+:::
 
 Now look what happens if we first take stress values greater than 3.
 That is we change the order of the operations. We end up with much
@@ -358,8 +420,6 @@ In this new format, we are only taking people with 30
 non missing stress values > 3 whereas before we took people with 30
 non missing stress values (any value) and then only observations where
 stress > 3.
-
-
 
 ## Finding Specific Cases or Outliers
 
@@ -399,7 +459,7 @@ Although these are the basic building blocks of data, there also are special for
 - *Date*: A special representation of numeric data when the data are dates. In `R` represented by multiple classes, including `Date`, `POSIX` and `chron`. The standard approach is to count the days since some origin. In `R`, the default origin in 1970-01-01. So 1970-01-01 is 0. 2 would indicate 1970-01-03. You can do some arthmetic on dates. For example adding or subtracting numbers, calculating the difference between dates.
 - *Date and time*: A special representation of numeric data when the data are dates and times. In `R` represented by multiple classes, including `POSIX` and `chron`. The standard approach is to count the seconds since some origin. In `R`, the default origin in 1970-01-01 00:00:00. So 1970-01-01 00:00:00 is 0. 2 would indicate 1970-01-01 00:00:02. You can do some arthmetic on datetime objects. For example adding or subtracting numbers, calculating the differece between dates and times.
 - *time*: A special representation of numeric data when the data are times. In `R` represented by class `chron`. 24 hours are formated so that they go from 0 to 1. For example, 3:31pm would be converted to 24 hour time: 15:30 and then to decimals for hours: 15.5 then converted ito range from 0 to 1: 15.5/24.
-- *factor*: A special representation of numeric data when the data are fundamentally discrete. For example, if study condition is coded as 0 = control, 1 = medication, 2 = psychotherapy. The data could be stored numerically, or as text. If stored as a factor, R will do some convenient things automatically, such as dummy coding in regression models.
+- *factor*: A special representation of numeric data when the data are fundamentally discrete. For example, if study condition is coded as 0 = control, 1 = medication, 2 = psychotherapy. The data could be stored numerically, or as text. If stored as a factor, `R` will do some convenient things automatically, such as dummy coding in regression models.
 
 
 # Date Variables
@@ -469,7 +529,6 @@ example "%Y-%m-%d" for YYYY-mm-dd or "%Y/%m/%d" for YYYY/mm/dd or "%Y
 %m %d" for YYYY mm dd or "%d %m-%Y" for dd mm-YYYY. This flexibility
 is needed as different people and countries commonly write dates in
 many different formats. 
-
 
 ## Date Helper Functions
 
@@ -558,21 +617,23 @@ collected separately, or you may have questionnaire data and sleep
 data from a FitBit. 
 
 Data can be combined by merging, and merging in `R` is typically done
-using the `merge()` function.
-
-`r margin_note("Merging in R is the same as joins which is the more
-common term for databases, such as SQL.")`
+using the `merge()` function. Note that merging in `R` is the same as 
+joins which is the more common term for databases.
 
 There are four main types of merges in `R` using the `merge()`
 function. Assume we are merging two datasets: `x` and
 `y`. 
 
-`r margin_note("Merging or joins always involves two datasets. Even if you need
+::: {.callout-tip collapse="true"}
+## Merging
+
+Merging or joins always involves two datasets. Even if you need
 to merge more than two datasets (e.g., you have baseline, post, and
 follow-up data) you always merge / join them two at a time. For
 example, first joining baseline and post into one bp dataset and
 then joining bp and your follow up data. In R the x dataset is
-always the left and the y dataset is always the right.")`
+always the left and the y dataset is always the right.
+:::
 	
 The type of merge performed is controlled by arguments to
 the `merge()` function.
@@ -586,9 +647,9 @@ the `merge()` function.
 - **Right outer join**: resulting data has all rows in `y`. Argument: `all.y
   = TRUE` .
 
-`r margin_note("This small, hypothetical study collected data via surveys and
+This small, hypothetical study collected data via surveys and
 actigraphy. The surveys have peoples ages and the actigraphy has
-their sleep duration, which we wish to join together for analysis.")`
+their sleep duration, which we wish to join together for analysis.
 
 We will explore joins using two, small datasets. `ID` is used
 to indicate participant ID.
@@ -611,24 +672,28 @@ print(acti)
 
 ## Natural Join in `R`
 
-`r margin_note("Natural joins have only the rows / observations that
-are present in both datasets. In this example, the surveys and the
-actigraphy. You can pick whichever dataset you want to be x and 
-and y by which you list first.")`
-
 **Only rows present in both datasets**. 
 
-`r margin_note("When we write by = ID what is meant is that it should be
-by the variable called ID. The word ID is not special, its just
-that we happened to call the variable containing our IDs, ID. If
-we had called the variable containings IDs Email or Name then
-we would write: by = Email or by = Name. In other words,
-match the text in quotes to an actual variable name in the data.")` 
-	
 Joining data requires specifying how `R` should know which rows match
 each other. This is typically  done by an ID variable using the code:
 `by = "ID"`. The argument, `all = FALSE` is what tells `R` this should
 be a natural join.
+
+::: {.callout-tip collapse="true"}
+## Details on Natural Joins
+
+Natural joins have only the rows / observations that
+are present in both datasets. In this example, the surveys and the
+actigraphy. You can pick whichever dataset you want to be x and 
+and y by which you list first.
+
+When we write by = ID what is meant is that it should be
+by the variable called ID. The word ID is not special, its just
+that we happened to call the variable containing our IDs, ID. If
+we had called the variable containings IDs Email or Name then
+we would write: by = Email or by = Name. In other words,
+match the text in quotes to an actual variable name in the data.
+:::
 
 ```{r}
 
@@ -642,7 +707,15 @@ merge(
 
 ## Full Outer Join
 
-`r margin_note("Full outer joins include cases that are present in either dataset. In this case, in either the surveys
+**All rows present in either dataset**. 
+
+The argument, `all = TRUE` is what tells `R` this should be a full
+outer join. Full outer joins include all rows or observations.	
+
+::: {.callout-tip collapse="true"}
+## Details on Full Outer Join
+
+Full outer joins include cases that are present in either dataset. In this case, in either the surveys
 or the actigraphy. You can pick whichever dataset you want to be x
 and y by which you list first, although with a full outer join, it
 does not make much difference, other than which columns/variables come
@@ -653,12 +726,8 @@ Note that R fills in missing values for rows /
 observations and variables that are present in one dataset but not the
 other. So if two datasets do not have identical rows / observations, a
 full outer join will result in some missing values. These are shown in
-the print out as NA")`
-
-**All rows present in either dataset**. 
-
-The argument, `all = TRUE` is what tells `R` this should be a full
-outer join. Full outer joins include all rows or observations.	
+the print out as NA.
+:::
 	
 ```{r}
 
@@ -673,18 +742,22 @@ merge(
 
 ## Left Outer Join
 
-`r margin_note("As before, we must specify what variable(s) to
-merge by so R knows how to match rows together, accomplished using
-the code: by = ID. Also as before, R fills in missing values for
-the variables. In this case, missing values for the rows /
-observations that are present in surveys, but not in acti (i.e., the
-variable Sleep and ID = 1).")`
-
 **All rows / observations that are present in left dataset
 (surveys)**.
 
 The argument, `all.x = TRUE` is what tells `R` this should be a left
 outer join.
+
+::: {.callout-tip collapse="true"}
+## Details on Left Outer Join
+
+As before, we must specify what variable(s) to
+merge by so R knows how to match rows together, accomplished using
+the code: by = ID. Also as before, R fills in missing values for
+the variables. In this case, missing values for the rows /
+observations that are present in surveys, but not in acti (i.e., the
+variable Sleep and ID = 1).
+:::
 
 ```{r}
 
@@ -698,16 +771,20 @@ merge(
 
 ## Right Outer Join
 
-`r margin_note("As before, we must specify what variable(s) to merge by
+**All rows / observations that are present in right dataset
+(acti)**.  The argument, `all.y = TRUE` is what tells `R` this should be a right
+outer join. 
+
+::: {.callout-tip collapse="true"}
+## Details on Right Outer Join
+
+As before, we must specify what variable(s) to merge by
 so R knows how to match rows together, accomplished using the code:
 by = ID. Note that R fills in missing values for the variables
 in surveys that are not in acti and the rows / observations that are
 present in acti, but not in surveys 
-(i.e., the variable Age and ID = 4).")`
-
-**All rows / observations that are present in right dataset
-(acti)**.  The argument, `all.y = TRUE` is what tells `R` this should be a right
-outer join. 
+(i.e., the variable Age and ID = 4).
+:::
 
 ```{r}
 
@@ -721,32 +798,32 @@ merge(
 
 ## Rows and missing after joining
 
-
-`r margin_note("Knowing how many rows you expect gives you a quick way to
-check whether the join is working as you want or something
-unexpected may be happening. Practical experience is that joins
-can easily have some errors resulting in unintended consequences, 
-like missing data or repetitions of rows that were not wanted.")`
-
-It is helpful to know how many rows you expect in the 
-results.
-
-
-`r margin_note("This behaviour is sometimes referred to as cross or
-cartesian joining. When there are multiple matches for a row/ID in
-both datasets, all possible combinations are returned. In this
-case, rows 2 and 3 are both ID 2 in surveys2 and rows 1 and 2 are
-both ID 2 in acti2, so those are crossed so you have all possible
-pairings of rows from each dataset associated with ID 2.")`
-
+It is helpful to know how many rows you expect in the results.
 In each of these two new datasets, ID 2 is repeated twice. 
 One might anticipate that a full outer join would return *5*
 rows, (IDs 1, 2, 2, 3, 4). `R` actually returns **7** rows, with
 four rows for ID 2, because all rows of ID 2 in `surveys2` are
 repeated by all rows of ID 2 in `acti2`. 
 
+::: {.callout-tip collapse="true"}
+## Why knowing the number of rows matters
 
-**Merging with any duplicates can behave in unexpected ways**. 
+Knowing how many rows you expect gives you a quick way to
+check whether the join is working as you want or something
+unexpected may be happening. Practical experience is that joins
+can easily have some errors resulting in unintended consequences, 
+like missing data or repetitions of rows that were not wanted.
+
+This behaviour is sometimes referred to as cross or
+cartesian joining. When there are multiple matches for a row/ID in
+both datasets, all possible combinations are returned. In this
+case, rows 2 and 3 are both ID 2 in surveys2 and rows 1 and 2 are
+both ID 2 in acti2, so those are crossed so you have all possible
+pairings of rows from each dataset associated with ID 2.
+:::
+
+**Merging with any duplicates can behave in unexpected ways**.
+
 In a small dataset, it is easy to see what has
 happened. In a large dataset, checking whether the merge worked as
 expected requires using summaries or other checks, such as evaluating
@@ -1155,4 +1232,5 @@ merge(surveys, acti,
       all = TRUE)
 
 ``` 
+
 
