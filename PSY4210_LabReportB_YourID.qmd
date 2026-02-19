@@ -1,0 +1,49 @@
+---
+title: "PSY4210 Lab Report - 2026 - Part 2"
+author: 
+  - name: Your Monash ID Number -- Your Full Name
+    email: youremail@student.monash.edu
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    embed-resources: true
+    anchor-sections: true
+    smooth-scroll: true
+---
+# Set up
+
+
+```{r}
+
+library(haven)
+library(data.table)
+library(JWileymisc)
+library(ggplot2)
+library(ggpubr)
+library(visreg)
+
+# Add other packages you need here
+```
+
+
+
+
+# 3. Missing Data
+
+
+
+# 4. Linear Mixed Models 1
+
+
+
+# 5. Linear Mixed Models 2
+
+
+
+# 6. Interactions and Moderation for LMMs
+
+
+
+

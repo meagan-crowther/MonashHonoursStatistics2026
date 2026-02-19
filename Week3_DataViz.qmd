@@ -1,12 +1,95 @@
 ---
-title: "Data Visualization"
-author: "Joshua F. Wiley/Pei Hwa Goh/Michelle Byrne"
+title: "PSY4210: Data Visualization"
+author: 
+  - name: Pei Hwa Goh
+  - name: Joshua F. Wiley
+    email: joshua.wiley@monash.edu
+  - name: Michelle Byrne
 date: "`r Sys.Date()`"
-output: 
-  tufte::tufte_html: 
+format:
+  html:
     toc: true
-    number_sections: true
+    number-sections: true
+    embed-resources: true
+    anchor-sections: true
+    smooth-scroll: true
 ---
+
+# Summary & Key Points
+
+:::{.callout-note collapse="false"}
+## Key Terms
+
+- **Grammar of Graphics**: A framework where plots are built by layering components.
+- **Layer**: A combination of data + mappings + a geom (and optionally a stat/position).
+- **Aesthetics (`aes`)**: Visual mappings from variables to properties (x, y, color/fill, shape, size, alpha).
+- **Mapping vs. Setting**: Mapping ties an aesthetic to a variable; setting assigns a constant.
+- **Geometries (`geom_*`)**: The marks you draw (e.g., points, bars, lines, box/violin, histogram/density).
+- **Statistical transformations (`stat_*`)**: Summaries computed before drawing (e.g., `stat_summary`, `stat_smooth`).
+- **Scales (`scale_*`)**: Control how data values map to aesthetics (continuous/discrete, color/fill/shape).
+- **Position adjustments**: How geoms are placed (identity, dodge, jitter/`geom_jitter`).
+- **Faceting**: Small multiples to compare groups (e.g., `facet_grid`).
+- **Coordinate systems**: Axes/space control (e.g., `coord_cartesian`, `coord_flip`).
+- **Guides/Legends**: How mapped aesthetics are explained (names, breaks, labels).
+- **Bin width**: Controls histogram/dotplot resolution.
+- **Kernel density**: Smooth estimate of a distribution (density plot integrates to 1).
+- **Q–Q plot**: Compares sample quantiles to a theoretical distribution (normality check).
+- **Internal consistency (Cronbach’s α)**: Reliability of multi‑item scales.
+- **Reverse‑coded items**: Items whose scoring direction is flipped before aggregation.
+- **Row‑wise aggregation**: Computing person‑level scores from items (e.g., `rowMeans()`), handling missingness.
+:::
+
+:::{.callout-note collapse="false"}
+## Key Concepts
+
+- **Scoring & Reliability**
+  - Create scale/subscale scores from items; reverse‑code where needed before aggregating.
+  - Prefer `rowMeans()` (optionally multiply by #items for “sum” scales) to use available data while tolerating a small amount of missingness.
+  - Use reliability checks (e.g., Cronbach’s α) and `check.keys = TRUE` to detect/handle reverse‑keyed items.
+
+- **Building Plots with the Grammar of Graphics**
+  - Start with `ggplot(data, aes(...))`, then add layers (`+ geom_*`) and optionally `stat_*`, scales, coordinates, faceting, and themes.
+  - Map additional variables to aesthetics (color/fill/shape/size/alpha) to add information without clutter.
+  - Distinguish **mapping** (variable-driven) from **setting** (constant) aesthetics to avoid confusing legends.
+
+- **Choosing Univariate Displays**
+  - **Histogram / Dotplot**: Show distribution via bins; bin width controls granularity.
+  - **Density plot**: Smooth distribution view (area = 1); useful alongside histograms.
+  - **Box/Violin**: Compact summaries and distribution shape; robust to outliers.
+  - **Q–Q plot**: Visual normality check; use with context (many analyses don’t require variables themselves to be normal, but residuals in some models do).
+
+- **Checking Distributions & Outliers**
+  - Overlay theoretical curves or use diagnostic helpers to compare observed vs. reference distributions and to spot outliers.
+  - Use sensible axis breaks (e.g., quantiles) to aid interpretation.
+
+- **Bivariate, Categorical, and Mixed Displays**
+  - **Scatterplots**: Consider overplotting remedies (alpha, jitter); shapes can be hard to distinguish—use them judiciously or customize with manual scales.
+  - **Bar charts**: For pre‑summarized data use `stat = "identity"`; otherwise map raw data and let `stat` summarize.
+  - **Percent/Proportion views**: Compute proportions and confidence intervals before plotting to avoid misleading scales.
+  - **Mixed continuous × categorical**: Combine raw points (e.g., dot/jitter) with summaries (means & CIs), flip coordinates for readability, and facet across groups for clear comparisons.
+
+- **Presentation & Clarity**
+  - Set factor levels/labels early; keep legends informative (titles, breaks, labels).
+  - Use themes and minimalist frames to focus attention on data (e.g., range frames, Tufte‑style).
+:::
+
+:::{.callout-note collapse="true"}
+## Key Functions or Operators
+
+- **Data & Scoring**: `rowMeans()`, `factor()`, `as.data.table()`, `psych::alpha(..., check.keys = TRUE)`
+- **Core ggplot**: `ggplot()`, `aes()`, `geom_point()`, `geom_line()`, `geom_bar(stat = "identity")`,  
+  `geom_histogram()`, `geom_dotplot()`, `geom_density()`, `geom_boxplot()`, `geom_violin()`,  
+  `geom_qq()`, `geom_abline()`
+- **Summaries & Diagnostics**: `stat_summary(fun.data = mean_cl_normal, ...)`, `position_dodge()`,  
+  diagnostic helpers for distribution checks (e.g., overlay normal curves; Q–Q)
+- **Scales & Guides**: `scale_x_continuous()`, `scale_y_continuous()`, `scale_x_discrete()`,  
+  `scale_fill_manual()`, `scale_colour_manual()`, `scale_shape_manual()`
+- **Layout & Style**: `facet_grid()`, `coord_cartesian(expand = FALSE)`, `coord_flip()`,  
+  `ggtitle()`, `theme_pubr()`, `geom_rangeframe()`
+:::
+
+You can view, download or pull the raw code for this content here
+https://github.com/jwiley/MonashHonoursStatistics
 
 ```{r loadpackages}
 options(digits = 3)
@@ -92,7 +175,9 @@ typically added up, then multiply. This uses the most available data
 and most the time is sensible in my experience with raw data. 
   
 
-`r margin_note("Often in R, you will see short and long ways of doing the same thing. This may seem confusing at first, but you get used to it. The reason is that there are some circumstances where you really do need the long way, but mostly the short way is quicker and easier. For example, if you have a group of friends, but only one 'Jane' in the group, you probably just say 'Jane'. However, if your friend group grows and you end up with two 'Janes' then you might call one 'Jane T' or 'new Jane' or find some other way to indicate which 'Jane' you are talking about. The same applies in R. There are usually shortcuts which are the default, but now and then you will get in a situation where you need a longer or more specific way of referring to a function or of accomplishing a specific task that cannot be managed with the short simple way.")`
+:::{.callout-note collapse="true"}
+Often in R, you will see short and long ways of doing the same thing. This may seem confusing at first, but you get used to it. The reason is that there are some circumstances where you really do need the long way, but mostly the short way is quicker and easier. For example, if you have a group of friends, but only one 'Jane' in the group, you probably just say 'Jane'. However, if your friend group grows and you end up with two 'Janes' then you might call one 'Jane T' or 'new Jane' or find some other way to indicate which 'Jane' you are talking about. The same applies in R. There are usually shortcuts which are the default, but now and then you will get in a situation where you need a longer or more specific way of referring to a function or of accomplishing a specific task that cannot be managed with the short simple way.
+:::
 
 Let's look at each of these for the variable perceived stress from the
 baseline questionnaire of our data collection exercise. Finally, its 
@@ -110,7 +195,9 @@ function to be explicit about which one to use. If we were only using
 the `psych` or only using the `ggplot2` package, this would not be
 necessary.
 
-`r margin_note("You might have noticed something new, we used .SD, thats also a special symbol in data.table that means, the currently selected data. Well what IS the currently selected data? Whatever rows we picked and whichever columns specified by .SDcols, which we also listed at the end. That is needed because rowMeans() expects to be given a data set, not individual variables, but we are calling it already within db, a dataset, so we need some way of referring to a subset of the dataset within the data.table and the way we do that is with .SD. Its okay if that doesn't make sense right now, just copy and paste the code and know where to change variable names is enough for this unit. More: https://cran.r-project.org/web/packages/data.table/vignettes/datatable-sd-usage.html")`
+:::{.callout-note collapse="true"}
+You might have noticed something new, we used .SD, thats also a special symbol in data.table that means, the currently selected data. Well what IS the currently selected data? Whatever rows we picked and whichever columns specified by .SDcols, which we also listed at the end. That is needed because rowMeans() expects to be given a data set, not individual variables, but we are calling it already within db, a dataset, so we need some way of referring to a subset of the dataset within the data.table and the way we do that is with .SD. Its okay if that doesn't make sense right now, just copy and paste the code and know where to change variable names is enough for this unit. More: https://cran.r-project.org/web/packages/data.table/vignettes/datatable-sd-usage.html
+:::
 
 ```{r scoring} 
 
@@ -195,22 +282,26 @@ pb <- ggplot(data = db, aes(x = Stress))
 
 ```
 
-`r margin_note("Histograms define equal width bins on the x axis and
+:::{.callout-note collapse="true"}
+Histograms define equal width bins on the x axis and
 count how many observations fall within each bin. Bars display these
 where the width of the bar is the width of the bin and the height of
 the bar is the count (frequency) of observations falling within that
-range. Histograms show a univariate distribution.")`
+range. Histograms show a univariate distribution.
+:::
 
 Using our basic mapping, we can "add" a histogram geometry to view a
 histogram.
 
-`r margin_note("When you use geom_histogram() or geom_dotplot() you'll
+:::{.callout-note collapse="true"}
+When you use `geom_histogram()` or `geom_dotplot()` you'll
 likely get a warning that a default number of bins were used and you
 should specify a better binwidth. The binwidth controls how wide the
 histogram bars are or how wide the dots in the dotplot are. However,
 for our purposes the default option is almost always good enough and
 you can feel free to ignore this message generally, unless you really
-want to change your histogram.")`
+want to change your histogram.
+:::
 
 ```{r, fig.width = 6, fig.height = 5, fig.cap = "A histogram in ggplot2 for stress"}
 
@@ -220,7 +311,8 @@ pb + geom_histogram()
 ```
 
 
-`r margin_note("Density plots attempt to provide an empirical
+:::{.callout-note collapse="true"}
+Density plots attempt to provide an empirical
 approximation of the probability density function (PDF) for data.
 A probability density function always sums to one (i.e., if you
 integrated to get the area under the curve, it would always be one).
@@ -228,7 +320,8 @@ The underlying assumption is that the observed data likely come from
 some relatively smooth distribution, so typically a smoothing kernel
 is used so that you see the approximate density of the data, rather
 than seeing exactly where each data point falls.
-Density plots show a univariate distribution.")`
+Density plots show a univariate distribution.
+:::
 
 We also can make a density plot, which also attempts to show the
 distribution, but using a smooth density function rather than binning
@@ -242,11 +335,13 @@ pb + geom_density()
 
 ``` 
 
-`r margin_note("Dot plots show the raw data. The data values are on the x
+:::{.callout-note collapse="true"}
+Dot plots show the raw data. The data values are on the x
 axis. If two data points would overlap, they are vertically
 displaced leading to another name: stacked dot plots. They are good
 for small datasets. The y axis is kind of like a discrete density. Dot
-plots show a univariate distribution.")`
+plots show a univariate distribution.
+:::
 
 Another type of plot are (stacked) dotplots. These are very effective
 at showing raw data for small datasets. Each dot represents one
@@ -277,15 +372,17 @@ ggplot(db, aes(sample = scale(Stress))) +
 
 ## Checking Distributions
 
-`r margin_note('We do not have to assume a normal distribution. The testDistribution() function supports many other types of distributions. For example this code would test whether the data followed a chi-squared distribution: </br> plot(testDistribution(db$Stress, distr = "chisq", starts = list(df = 5),
-  extremevalues = "theoretical", ev.perc = .005))
-</br>
+:::{.callout-note collapse="true"}
+We do not have to assume a normal distribution. The `testDistribution()` function supports many other types of distributions. For example this code would test whether the data followed a chi-squared distribution:
+
+`plot(testDistribution(db$Stress, distr = "chisq", starts = list(df = 5),
+  extremevalues = "theoretical", ev.perc = .005))`
+
 The log likelihood value is outputed for each graph, and this can be used to empirically pick the better fitting distribution as whichever distribution provides the highest log likelihood for the data. We do not get into different distributions too much in this unit, but as you go on, you may find that many variables do not follow a normal distribution and there are many statistical models that do not require outcome variables to follow a normal distribution.
-</br>
-</br>
+
 To see more examples, look at: http://joshuawiley.com/JWileymisc/articles/diagnostics-vignette.html
    
-   ')`
+:::
 
 We often use graphs also to visually assess assumptions, such as
 normality and for outliers. Most commonly, and certainly in what you
@@ -339,12 +436,14 @@ plot(testDistribution(db$Stress,
 
 ## Mapping Additional Variables
 
-`r margin_note("When there are multiple univariate distributions to
+:::{.callout-note collapse="true"}
+When there are multiple univariate distributions to
 view, density plots are probably one of the most efficient
 ways. Histograms are difficult to view because they either are
 stacked, which makes interpretation more difficult or dodged which is
 visually difficult to see, or overplotted, which can hide some of the
-data.")`
+data.
+:::
 
 We can map additional variables to aesthetics such as the colour to
 include more information. 
@@ -620,18 +719,20 @@ ggplot(db, aes(Stress, SE)) +
 
 ``` 
 
-`r margin_note("These informative axes are created by asking 
+:::{.callout-note collapse="true"}
+These informative axes are created by asking 
 ggplot2 to create tick marks (breaks) on the x and y axis at the 
 quintiles of the variables, which is the default output from the 
 quantile() function. So now instead of the default tick marks /
 breaks on the axes, the breaks and numbers are:
-minimum (0th percentile), </br>
-25th percentile (i.e., lower quartile), </br>
-50th percentile (i.e., median), </br>
-75th percentile (i.e., upper quartile), </br>
-maximum (i.e., 100th percentile). </br>
+minimum (0th percentile),
+25th percentile (i.e., lower quartile),
+50th percentile (i.e., median), 
+75th percentile (i.e., upper quartile),
+maximum (i.e., 100th percentile).
 This provides a useful descriptive statistics on each variable in the
-plot, right in the axes.")`
+plot, right in the axes.
+:::
 
 
 Finally, we can make the axis labels more informative. Instead of
@@ -682,8 +783,10 @@ ggplot(db[!is.na(sex)], aes(Stress, SE, shape = sex)) +
 
 ```
 
-`r margin_note("There are many other shapes available. To see a list,
-    go to: http://sape.inf.usi.ch/quick-reference/ggplot2/shape.")`
+:::{.callout-note collapse="true"}
+There are many other shapes available. To see a list,
+    go to: http://sape.inf.usi.ch/quick-reference/ggplot2/shape.
+:::
 
 However, although the shapes are distinguishable, they are
 visually difficult. Cleveland did some studies around shape
@@ -712,7 +815,9 @@ ggplot(db[!is.na(sex)], aes(Stress, SE, shape = sex)) +
 
 # Presentation and Publication Plots
 
-`r margin_note("Many more examples can be found online, for example: http://www.cookbook-r.com/Graphs/")`
+:::{.callout-note collapse="true"}
+Many more examples can be found online, for example: http://www.cookbook-r.com/Graphs/
+:::
 
 Here we are going to put together several of the ideas learned to make
 some plots that could be included in presentations or publications.
@@ -896,7 +1001,9 @@ print(p.bar2)
  
 ```
 
-`r margin_note("You can find more about customizing guides here: https://ggplot2.tidyverse.org/reference/guide_legend.html")`
+:::{.callout-note collapse="true"}
+You can find more about customizing guides here: https://ggplot2.tidyverse.org/reference/guide_legend.html
+:::
 
 We can change `SelfesteemHigh` by using 
 `scale_fill_manual()` which lets us name the title of the legend and
@@ -1083,10 +1190,12 @@ ggMarginal(p.ss, type = "histogram")
 
 ``` 
 
-`r margin_note("Because we did not store the results of Stress
+:::{.callout-note collapse="true"}
+Because we did not store the results of Stress
 and selfesteem with the histograms added to the margins, we have the
 basic scatter plots in the figure, but we could have the histograms as
-well if desired by saving the result in p.ss.")`
+well if desired by saving the result in p.ss.
+:::
 
 Another feature that is helpful with figures is to arrange sets of
 related figures together. For example, in the following code we make a

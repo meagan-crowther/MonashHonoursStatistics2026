@@ -1,0 +1,601 @@
+---
+title: "PSY4210: Mediation Analysis"
+author: 
+  - name: Kristy Chong
+  - name: Joshua F. Wiley
+    email: joshua.wiley@monash.edu
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    embed-resources: true
+    anchor-sections: true
+    smooth-scroll: true
+---
+
+```{r, include=FALSE, echo=FALSE}
+## turn off some notes from R in the final HTML document
+knitr::opts_chunk$set(message = FALSE)
+```
+
+# Setup
+
+You can view, download or pull the raw code for this content here  
+https://github.com/jwiley/MonashHonoursStatistics
+
+```{r setup}
+
+options(digits = 3)
+
+library(haven)
+library(data.table)
+library(JWileymisc)
+library(DiagrammeR)
+library(ggplot2)
+library(ggpubr)
+
+# for mediation
+library(lavaan)
+
+## read in data -- we use baseline
+## set working directory to the folder containing data or adjust the path as needed
+db <- as.data.table(read_sav("[2021] PSY4210 BL.sav"))
+
+## compute stress (PSS)
+db[, PSS2 := 6 - PSS2r]
+db[, PSS3 := 6 - PSS3r]
+db[, stress := rowMeans(.SD, na.rm = TRUE) * 4,
+   .SDcols = c("PSS1", "PSS2", "PSS3", "PSS4")]
+
+## compute self-esteem (LSE)
+db[, selfesteem := rowMeans(.SD, na.rm = TRUE),
+   .SDcols = c("LSE1", "LSE2", "LSE3", "LSE4")]
+
+## compute neuroticism (BFI)
+db[, BFI_N1 := 6 - BFI_N1r]
+db[, neuroticism := rowMeans(.SD, na.rm = TRUE),
+   .SDcols = c("BFI_N1", "BFI_N2")]
+
+```
+
+# Introduction to Mediation
+
+## What is mediation?
+
+Mediation analysis is used when you have a theory that an independent variable or predictor,
+$X$ causes an outcome, $Y$, and that this is (at least partly) explained or mediated by a
+third variable, $M$.
+*Note that while you can have more than one IV, more than one mediator, or more than one outcome,
+we will focus on the simplest case of one IV, one mediator, and one outcome.*
+
+An example research question might be:
+"Does **self‑esteem** mediate the effect of **neuroticism** on **stress**?" 
+
+For example, suppose we hypothesize that:
+
+- higher **neuroticism** (**X**) lowers **self‑esteem** (**M**), and
+- lower **self‑esteem** increases **stress** (**Y**).
+
+In words: **neuroticism may affect stress through self‑esteem**.
+
+The basic mediation diagram is:
+
+```{r diagram-basic, echo=FALSE}
+DiagrammeR::grViz("
+digraph mediation_basic {
+  graph [rankdir = LR]
+  node  [shape = rectangle, style = filled]
+
+  X [label = 'Neuroticism (X)']
+  M [label = 'Self-esteem (M)']
+  Y [label = 'Stress (Y)']
+
+  X -> M [label = 'a']
+  M -> Y [label = 'b']
+  X -> Y [label = 'cp (direct)']
+}
+")
+```
+
+In this diagram:
+
+- The **a path** represents the relationship between **X** and **M**.
+- The **b path** represents the relationship between **M** and **Y**, controlling for **X**.
+- The **cp path** is the **direct effect** of **X** on **Y**, controlling for **M**.
+
+It is important to remember that a mediation model does not automatically tell you *why* things happen.
+That is, the statistical model alone does not establish causality. Causality requires a plausible design
+and assumptions (e.g., temporal ordering, no unmeasured confounding).
+In the example we used and based off cross-sectional, self-report data, causal claims are not warranted.
+However, if our variables were measured over time or manipulated, such as an experimental design that 
+manipulated the IV, then we could be more confident about potential causal claims.
+
+Mediation is often used to argue for a *mechanism* (a process). That implies a time order:
+
+1. **X happens first** (or is manipulated)
+2. then **M changes**
+3. then **Y changes**
+
+Cross‑sectional data can still be *modelled* with mediation, but causal interpretation becomes
+much harder because the required time ordering is not observed.
+
+One way to visualize the ideal measurement ordering is:
+
+```{r diagram-time, echo=FALSE}
+DiagrammeR::grViz("
+digraph mediation_time {
+  graph [rankdir = LR]
+  node  [shape = rectangle, style = filled]
+
+  X [label = 'Neuroticism (X)\\nTime 1']
+  M [label = 'Self-esteem (M)\\nTime 2']
+  Y [label = 'Stress (Y)\\nTime 3']
+
+  X -> M
+  M -> Y
+  X -> Y [style = dashed, label = 'possible\\ndirect path']
+}
+")
+```
+
+:::{.callout-note collapse="true"}
+If $X$ is randomized (e.g., an intervention), causal claims about $X$ to $M$ and $X$ to $Y$ become more plausible.
+Causal claims about $M$ to $Y$ typically still require additional assumptions, because $M$ is rarely randomized
+or experimentally manipulated. In observational data, you need to consider potential confounders of
+the $M$ to $Y$ relationship and whether they are measured and adjusted for.
+Also note that even with temporal ordering, confounding can occur. It also is helpful, if possible,
+to explicitly capture change in the mediator and outcome, rather than just their levels at later time points.
+:::
+
+## Total, direct, and indirect effects
+
+In a standard *linear* mediation model with continuous variables:
+
+1. The mediator model:
+
+$$
+M_i = i_M + a X_i + e_{M_i}
+$$
+
+2. The outcome model:
+
+$$
+Y_i = i_Y + cp X_i + b M_i + e_{Y_i}
+$$
+
+3. The total effect model (ignoring the mediator):
+
+$$
+Y_i = i_T + c X_i + e_{Y_i}
+$$
+
+Where:
+
+- **Total effect (c):** expected change in $Y$ per one‑unit increase in $X$, not adjusting for $M$.
+- **Direct effect (cp):** expected change in $Y$ per one‑unit increase in $X$, adjusting for $M$.
+- **Indirect effect (ab):** expected change in $Y$ per one‑unit increase in $X$ transmitted through $M$.
+
+Under the usual assumptions for linear mediation with continuous variables,
+the effects relate as:
+
+$$
+Total = Direct + Indirect
+$$
+
+or in our short hand notation:
+
+$$
+c = cp + ab
+$$
+
+The direct effect $cp$ is the unique association/effect of $X$ on $Y$ after adjusting for $M$.
+This is the same as in a regression model. When covariates are present (here think of $M$ as a covariate in the outcome model),
+the regression coefficients, $cp$ represent the unique associations independent of any other covariate/predictor.
+
+Also note that it is entirely possible for the direct and indirect effects to go 
+in opposite directions.
+For example, imagine staying up the night before an exam to study was the IV.
+Staying up reduces sleep which may worsen exam scores directly.
+However, staying up creates time to study which increases knowledge which may increase exam scores.
+So there could be a negative direct effect of staying up on exam scores, but a
+positive indirect effect through knowledge gain.
+
+### Total effect versus decomposition (diagram)
+
+```{r diagram-total-vs-decomp, echo=FALSE}
+DiagrammeR::grViz("
+digraph mediation_total {
+  graph [rankdir = LR]
+  node  [shape = rectangle, style = filled]
+
+  X [label = 'Neuroticism (X)']
+  M [label = 'Self-esteem (M)']
+  Y [label = 'Stress (Y)']
+
+  X -> Y [label = 'c (total)']
+
+  X -> M [label = 'a', color = gray40]
+  M -> Y [label = 'b', color = gray40]
+  X -> Y [label = 'cp (direct)', color = gray40]
+
+  lab [shape = plaintext, label = 'c = cp + a×b']
+  {rank = same; lab;}
+}
+")
+```
+
+## Causality
+
+There is much literature on defining causal effects.
+We think of something as "causal" when something else is due to it.
+One way to formalize this is through counterfactuals:
+"What would have happened if $X$ had a different value?"
+
+For example, imagine two people and worlds, that are perfectly identical,
+except that one person has higher neuroticism and the other has lower neuroticism.
+If nothing else is different, between these two people, and then you measure what happens
+"next" the difference we would say is caused by neuroticism.
+
+We can think about this as comparing the realities we observed and measured,
+with a counterfactual. That is, what would have happened if ...?
+
+Of course, we do not observe the counterfactual world. We only observe one reality.
+Nevertheless, counterfactual arguments and theories have been used to build up 
+causal inference frameworks, and to clarify what we mean by causal effects.
+They have helped clarify what assumptions are required for causality to hold,
+and been used to create mathematical and statistical models.
+
+In causal mediation frameworks, direct and indirect effects are often defined in terms of
+counterfactual outcomes (e.g., *natural direct* and *natural indirect* effects). You do not need
+the full counterfactual machinery to fit a linear mediation model, but it helps clarify that
+mediation is a *causal question*, not merely a statistical pattern.
+
+Generally, for causal mediation effects in observational data, you need these assumptions:
+
+- no unmeasured confounding of the $X$ to $M$ relationship,
+- no unmeasured confounding of the $M$ to $Y$ relationship,
+- no unmeasured confounding of the $X$ to $Y$ relationship,
+
+These assumptions are strong. A simple way to visualize the concern is that an
+unmeasured variable $U$ could cause both the mediator and the outcome, creating
+spurious evidence for an indirect pathway. In our data, 
+imagine perhaps having very strict and critical parents (U) could lead to both lower
+self-esteem (M) and higher stress (Y). Thus even if we correctly estimate a causal effect
+of neuroticism on self-esteem, the self-esteem to stress path may be confounded, 
+resulting in a biased estimate of the causal indirect effect and us (wrongly) concluding
+that self-esteem mediates the effect of neuroticism on stress.
+
+```{r diagram-confounding, echo=FALSE}
+DiagrammeR::grViz("
+digraph mediation_confounding {
+  graph [rankdir = LR]
+  node  [shape = rectangle, style = filled]
+
+  X [label = 'Neuroticism (X)']
+  M [label = 'Self-esteem (M)']
+  Y [label = 'Stress (Y)']
+  U [label = 'Unmeasured\\nconfounder (U)', shape = ellipse, style = dashed]
+
+  X -> M [label = 'a']
+  M -> Y [label = 'b']
+  X -> Y [label = 'cp']
+  U -> M [style = dashed]
+  U -> Y [style = dashed]
+}
+")
+```
+
+Finally, it can be helpful to consider a few common
+misunderstandings about mediation analyses.
+
+1. "There is no point in testing for mediation if there is no significant (total) direct effect." This is false because the $cp$ and $ab$ can be opposite signs.
+2. "If there was a significant total direct effect and after controlling for mediator(s) the direct effect is no longer significant,
+  then the mediator(s) fully explain the effects on the outcome." This is again false because there may be additional mediators
+  that have opposite sign effects. For example, imagine that X is positively associated with Y. You test one mediator, M1 which has a positive indirect effect and after that there is no association of X with Y. However, there could be a another mediator M2 that has a positive indirect effect and a third M3 that has a negative indirect effect. M2 and M3 were not int he model and their indirect effects "cancel out" so that the remaining controlled direct effect, cp, is not significant, but nevertheless M2 and M3 do exist and are part of the causal mechanisms of X on Y.
+3. "A significant indirect effect proves causal mediation." False, as further assumptions are needed to establish causality.
+
+# Mediation as Regression
+
+We will use a path analysis framework to test mediation.
+However, to help make this more intuitive, it can be useful to
+see it estimated using linear regressions you are already familiar with.
+
+## Step 1: Total effect (c)
+
+```{r lm-total-effect}
+
+m_total <- lm(stress ~ neuroticism, data = db)
+summary(m_total)
+
+```
+
+The slope for `neuroticism` in this model is the **total effect** $c$ (on the linear outcome scale).
+
+## Step 2: Mediator model (a)
+
+```{r lm-a-path}
+
+m_med <- lm(selfesteem ~ neuroticism, data = db)
+summary(m_med)
+
+```
+
+The slope for `neuroticism` is the **a path**.
+
+## Step 3: Outcome model with mediator (b and cp)
+
+```{r lm-b-cprime}
+
+m_out <- lm(stress ~ neuroticism + selfesteem, data = db)
+summary(m_out)
+
+```
+
+- The slope for `selfesteem` is the **b path**.
+- The slope for `neuroticism` in this model is the **direct effect** $cp$.
+
+### Adjusted vs unadjusted mediator–outcome association
+
+Notice that the **b path** is the association between the mediator and outcome **adjusting for X**.
+If you regress stress on self-esteem *without* adjusting for neuroticism, you are estimating a different quantity:
+
+```{r lm-unadjusted-b}
+
+m_unadj <- lm(stress ~ selfesteem, data = db)
+summary(m_unadj)
+
+```
+
+The unadjusted slope can differ from the $b$ path because stress may be related to both self-esteem and neuroticism.
+In the mediation model, the $b$ path answers:
+"Is self-esteem related to stress **among people with the same level of neuroticism**?"
+
+## Step 4: Compute indirect, direct, total, and proportion mediated
+
+```{r lm-compute-effects}
+
+a_hat <- coef(m_med)["neuroticism"]
+b_hat <- coef(m_out)["selfesteem"]
+cp_hat <- coef(m_out)["neuroticism"]
+c_hat <- coef(m_total)["neuroticism"]
+
+indirect_hat <- a_hat * b_hat
+direct_hat <- cp_hat
+total_hat <- c_hat
+prop_med_hat <- indirect_hat / total_hat
+
+cbind(
+  indirect = indirect_hat,
+  direct = direct_hat,
+  total = total_hat,
+  prop_mediated = prop_med_hat)
+
+```
+
+Because the paths are unstandardized regression coefficients, they are in the original units of the variables.
+Sometimes it is easier to interpret effects for a *meaningful change* in X, such as a **1 SD increase** in neuroticism.
+
+```{r effect-size-1sd}
+
+sd_x <- sd(db$neuroticism, na.rm = TRUE)
+
+# Effects per 1 SD increase in neuroticism (unstandardized scale)
+indirect_1sd <- indirect_hat * sd_x
+direct_1sd <- direct_hat * sd_x
+total_1sd <- total_hat * sd_x
+
+cbind(sd_x = sd_x, indirect_1sd = indirect_1sd, direct_1sd = direct_1sd, total_1sd = total_1sd)
+
+```
+
+# lavaan: Regression and Mediation in a SEM Framework
+
+`lavaan` is an R package for **latent variable analysis**, sometimes called
+structural equation modelling (SEM). SEM is a general framework that can include:
+
+- multiple regression (as a special case of SEM)
+- path analysis (basically regressions where there are more than one outcome equation estimated in the same model)
+- mediation models
+- much more
+
+For our purposes, lavaan is useful because:
+
+1. you can write regression/path models in a compact, readable syntax,
+2. you can estimate all paths simultaneously,
+3. you can define and estimate **indirect effects** directly, and
+4. you can obtain **bootstrap** confidence intervals easily.
+
+You will see a small number of operators repeatedly in lavaan syntax:
+
+- `y ~ x` means "regress $y$ on $x$"
+- `y ~~ y` is a (residual) variance for $y$
+- `y ~~ x` is a covariance/correlation between $y$ and $x$
+- `new := expression` defines a new parameter as a function of existing parameters
+
+In a basic regression/mediation model, you mostly need `~` and `:=`.
+
+To start understanding lavaan, let's fit a simple regression model where stress is predicted by neuroticism:
+
+In lavaan syntax, regressions use `~`, just like other linear models using `lm()`.
+
+```{r lavaan-simple-regression}
+
+mod_reg <- "
+  neuroticism ~ stress
+"
+
+fit_reg <- lavaan::sem(mod_reg, data = db)
+
+summary(fit_reg, standardized = TRUE, rsquare = TRUE)
+
+```
+
+This is (conceptually) the same model you would fit using:
+
+```{r lm-simple-regression}
+
+m_reg <- lm(neuroticism ~ stress, data = db)
+summary(m_reg)
+
+```
+
+### Multiple regression in lavaan (brief)
+
+Because lavaan can estimate multiple regressions simultaneously, it is also convenient for ordinary
+multiple regression. For example, this is the same model as `lm(neuroticism ~ stress + selfesteem)`:
+
+```{r lavaan-multiple-regression}
+
+mod_mr <- "
+  neuroticism ~ stress + selfesteem
+"
+
+fit_mr <- lavaan::sem(mod_mr, data = db)
+summary(fit_mr, standardized = TRUE, rsquare = TRUE)
+
+```
+
+### What to look for in lavaan output
+
+In `summary(fit_reg, standardized = TRUE, rsquare = TRUE)` you will typically see:
+
+- **Regressions**: the estimated slope(s)
+- **Variances**: residual variance of the outcome (and sometimes variance of predictors depending on settings)
+- **R-square**: proportion of variance in the outcome explained by predictors
+- **Standardized estimates**: effect sizes in SD units (useful for comparison)
+
+Notice that by default you do not get the intercept. To get intercepts, can add `lavaan::sem(..., meanstructure = TRUE)`.
+
+```{r lavaan-intercepts}
+
+fit_mr2 <- lavaan::sem(mod_mr, data = db, meanstructure = TRUE)
+summary(fit_mr2, standardized = TRUE, rsquare = TRUE)
+
+```
+
+Now that we have seen some lavaan basics, we can setup our mediation model.
+
+# Mediation in lavaan
+
+We will treat:
+
+- **X:** `neuroticism`
+- **M:** `selfesteem`
+- **Y:** `stress`
+
+The mediation model is:
+
+- `selfesteem ~ neuroticism`  (a path)
+- `stress ~ neuroticism + selfesteem` (c′ and b paths)
+
+In lavaan, we can **label** paths (e.g., `a*neuroticism`) and then define new parameters
+using `:=`.
+
+```{r lavaan-mediation}
+
+mod_med <- "
+  # a path: X -> M
+  selfesteem ~ a*neuroticism
+
+  # b path and direct effect: M -> Y and X -> Y
+  stress ~ b*selfesteem + cp*neuroticism
+
+  # indirect, direct, total effects, and proportion mediated
+  indirect := a*b
+  direct   := cp
+  total    := direct + indirect
+  prop     := indirect / total
+"
+
+fit_med <- lavaan::sem(mod_med, data = db, meanstructure = TRUE)
+
+summary(fit_med, standardized = TRUE, rsquare = TRUE)
+
+```
+
+Mediation results often are reported in diagrams.
+The code below extracts the estimated paths and prints a diagram with the numeric values.
+
+```{r diagram-estimates, echo=FALSE}
+
+# Pull out the three key regression paths from the lavaan output
+pe_med <- parameterEstimates(fit_med, standardized = FALSE)
+a_est <- pe_med[pe_med$lhs == "selfesteem" & pe_med$op == "~" & pe_med$rhs == "neuroticism", "est"][1]
+b_est <- pe_med[pe_med$lhs == "stress" & pe_med$op == "~" & pe_med$rhs == "selfesteem", "est"][1]
+c_est <- pe_med[pe_med$lhs == "stress" & pe_med$op == "~" & pe_med$rhs == "neuroticism", "est"][1]
+
+dot_est <- sprintf("\
+digraph mediation_est {
+  graph [rankdir = LR]
+  node  [shape = rectangle, style = filled]
+
+  X [label = 'Neuroticism (X)']
+  M [label = 'Self-esteem (M)']
+  Y [label = 'Stress (Y)']
+
+  X -> M [label = 'a = %.3f']
+  M -> Y [label = 'b = %.3f']
+  X -> Y [label = 'cp = %.3f']
+}
+", a_est, b_est, c_est)
+
+DiagrammeR::grViz(dot_est)
+
+```
+
+# Statistical Inference
+
+Research has shown that even with relatively large sample sizes,
+the sampling distribution of the indirect effect, $ab$, is often not normal.
+This does not impact the parameter estimates, but it does impact standard errors,
+confidence intervals, and p-values. Essentially all our statistical inference.
+The most common solution is to use bootstrapping. In brief, bootstrapping works like this.
+
+- wtart with your dataset of size with $N$ observations (rows)
+- draw a bootstrap sample by randomly sampling $N$ observations (rows) with replacement from the original dataset. This means that some rows may be repeated and some may be left out in each bootstrap sample.
+- compute the statistic of interest for this bootstrap sample, that can be our indirect effect or any other parameter we want to estimate.
+- repeat the resampling and computation process a large number of times (e.g., 10,000 times), storing the parameters each time
+
+Now we have the sampling distribution of those parameters constructed empirically. We can summarise them, calculate standard errors and confidence intervals, etc. using that empircial sampling distribution. It does not require that the sampling distribution be normally distributed for accurate statistical inference.
+
+Bootstrapping with lavaan is quite easy. Here we set the random seed to make it 
+reproducible. We are only using 100 bootstrap samples here.
+That is purely so that it runs quickly. In practice, 10,000 or so is probably a better number.
+
+```{r lavaan-bootstrap}
+
+set.seed(1234)
+
+fit_med_boot <- lavaan::sem(
+  mod_med,
+  data = db,
+  meanstructure = TRUE,
+  se = "bootstrap",
+  bootstrap = 100
+)
+
+# Percentile bootstrap CIs
+pe_boot <- parameterEstimates(
+  fit_med_boot,
+  ci = TRUE,
+  level = 0.95,
+  boot.ci.type = "perc"
+)
+
+# Show the bootstrap CIs for the defined effects
+pe_boot[pe_boot$lhs %in% c("indirect", "direct", "total", "prop_med"),
+        c("lhs", "est", "se", "ci.lower", "ci.upper")]
+
+```
+
+If the bootstrapped confidence interval for the indirect effect
+(or any others) does not cross zero, we would say it is statistically significant at the 0.05 level.
+The 0.05 level because we asked for 95% confidence itnervals with `level = 0.95`. You can change that if you want.
+
+# Optional: Some references
+
+- Hayes, A. F. (2009). Beyond Baron and Kenny: Statistical mediation analysis in the new millennium. Communication monographs, 76(4), 408-420.
+- Preacher, K. J., & Hayes, A. F. (2008). Asymptotic and resampling strategies for assessing and comparing indirect effects in multiple mediator models. Behavior research methods, 40(3), 879-891.
+- Imai, K., Keele, L., & Tingley, D. (2010). A general approach to causal mediation analysis. Psychological methods, 15(4), 309.
+- the `mediation` R package: https://cran.r-project.org/web/packages/mediation/index.html has nice tools as well and supports causal mediation analysis with categorical mediators / outcomes, perhaps more easily than in lavaan.
