@@ -66,7 +66,7 @@ library(tufte)
 # Setup
 
 You can view, download or pull the raw code for this content here
-https://github.com/jwiley/MonashHonoursStatistics
+<https://github.com/meagan-crowther/MonashHonoursStatistics2026/blob/master/Week5_GLM2.qmd>
 
 We will be using a few packages for this content and also the baseline
 data only from the data collection exercise.

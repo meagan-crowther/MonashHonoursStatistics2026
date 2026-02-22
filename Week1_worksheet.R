@@ -14,7 +14,7 @@ c(1, 5, 4)
 
 ## assign results to an object
 ## note that after it is assigned, it shows up in RStudio in the "Environment"
-x <- c(1, 3, 5)
+x <- c(1, 3, 5, 12)
 
 ## view an existing object
 x
@@ -36,6 +36,12 @@ median(x)
 ## calculate the standard deviation
 sd(x)
 
+## calculate the standard deviation + round to digits = 2
+## The round function comes first, then the sd function(object), decimals = )
+round(sd(x), digits = 2)
+## This will also work without writing digits
+round(sd(x), 2)
+
 ## minimum
 min(x)
 
@@ -49,9 +55,9 @@ max(x)
 ## If we want the vector to have the numbers 1, 3, missing, then 7, 
 ## what would we fill in the ??? with here?
 y <- ???
-
-## calculate mean on y
-mean(y)
+  
+  ## calculate mean on y
+  mean(y)
 
 ## Why didn't that work? We need to tell R
 ## to remove missing values first
@@ -64,10 +70,10 @@ mean(y, na.rm = TRUE)
 ## find the mean of these numbers: 5, 3, 2, 9, 1
 ???
   
-## find the standard deviation of the variable "y"
-???
-
-#### 3. Using a Dataset ####
+  ## find the standard deviation of the variable "y"
+  ???
+  
+  #### 3. Using a Dataset ####
 
 ## R has a built in dataset called "mtcars"
 ## this dataset has variables on about 32 different cars
@@ -97,11 +103,11 @@ round(mtcars$mpg, digits = 0)
 ## calculate descriptive statistics (mean, standard deviation) of the 
 ## variable mpg
 ???
-
-## How do you get a summary of a whole dataset? Use google or the ? function
-???
-
-#### 4. Loading Data ####
+  
+  ## How do you get a summary of a whole dataset? Use google or the ? function
+  ???
+  
+  #### 4. Loading Data ####
 
 ## to start with, we will load a package for data management.
 ## Loading a package/library is like opening an app
@@ -119,18 +125,17 @@ library(data.table)
 ## then click on the the "Gear" icon and choose "Set As Working Directory"
 ## this will run some setwd() code in your console,
 ## which you can copy and paste here
-setwd("C:/Users/michelle/Documents/git_repos/MonashHonoursStatistics")
-d <- read.csv("IntroR_sample.csv")
+## Note: For PC the / need to be reversed - if your working directory copies with this direction / and you are getting errors, change them to \
+setwd("C:/MonashHonoursStatistics2026")
+d <- read.csv("data/IntroR_sample.csv")
 
 # (When you have more time, also install package "tidyverse"
 # - it takes a while)
 
 ## YOU TRY IT: get a summary of the data
 ???
-
   
-  
-#### 5. Logical Operators ####
+  #### 5. Logical Operators ####
 
 ## "==" : logical test if Depressed is equal to 1
 d$Depressed == 1
@@ -156,9 +161,35 @@ d$zStress[c(1, 3)]
 
 ## YOU TRY IT: What is the 10th value?
 ???
-
-## here are just the values of zStress where Depressed == 1
-d$zStress[d$Depressed == 1]
+  
+  ## here are just the values of zStress where Depressed == 1
+  d$zStress[d$Depressed == 1]
 
 ## here are just the values of zStress where zStress > 1
 d$zStress[d$zStress > 1]
+
+## BONUS - Install all the packages we are going to use this semester
+install.packages("data.table")
+install.packages("reshape2")
+install.packages("extraoperators")
+install.packages("tufte")
+install.packages("haven")
+install.packages("JWileymisc")
+install.packages("psych")
+install.packages("ggplot2")
+install.packages("ggpubr")
+install.packages("ggthemes")
+install.packages("scales")
+install.packages("ggExtra")
+install.packages("visreg")
+install.packages("ggExtra")
+install.packages("survey")
+install.packages("mice")
+install.packages("VIM")
+install.packages("lavaan")
+install.packages("lme4")
+install.packages("lmerTest")
+install.packages("multilevelTools")
+install.packages("marginaleffects")
+install.packages("Hmisc")
+

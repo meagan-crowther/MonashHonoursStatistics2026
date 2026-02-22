@@ -89,7 +89,7 @@ format:
 :::
 
 You can view, download or pull the raw code for this content here
-https://github.com/jwiley/MonashHonoursStatistics
+<https://github.com/meagan-crowther/MonashHonoursStatistics2026/blob/master/Week3_DataViz.qmd>
 
 ```{r loadpackages}
 options(digits = 3)

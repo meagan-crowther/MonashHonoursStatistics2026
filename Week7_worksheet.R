@@ -1,79 +1,68 @@
-####### WEEK 7 WORKSHEET - LMM Intro  #######
+####### WEEK 6 WORKSHEET - missing data #######
 
-# Which library do we need for the read_sav function?
-library(???) 
-
-# Which library do we need to open the daily diary as a data table?
-library(???) 
-
-# Which three libraries did we need in the readings for mixed effect models?
-library(???)
-library(???)
-library(???)
-
-# You will also need:
+library(data.table)
 library(JWileymisc)
-library(visreg)
+library(mice)
+library(VIM)
 library(ggplot2)
-library(ggpubr)
-library(tufte)
+library(haven)
 
-# Set your working directory to the folder that has the DD dataset
-setwd("???")
+# Load in the daily diary dataset (multiple surveys per person)
+dd <- as.data.table(???("???"))
 
-# Load in the daily diary dataset and convert it to a data table
-dd <- ???(read_sav("???")) # daily diary
+# When you have lots of variables, it's hard to get the pattern plots
+# to look useful. 
 
-# Build a random intercept model predicting 'dEnergy'. 
-m  <- ???(dEnergy ~ ? + (? | ?), data = dd)
-summary(m)
-# Q: On average, these people had an energy score of ____
-# A: ???
+# Make a subset of dd called dd_sub that has these variables: 
+# SurveyDay, dSE, dMood, dStress, dEnergy, dLoneliness
+??? <- ???[, .(???)]
 
-# Bonus: find a second way in the code to just display the answer above:
-???(m)
+# Now use the aggr() function on the subset to look at missing data patterns
+# Hint: if the proportions are not showing up on the right hand side, 
+# add this argument: 'cex.numbers = .8'. If variable labels don't show up,
+# add: 'cex.axis = .8'
 
-# Try to clean the within and between level of the variable:
-#  `dEnergy` in the daily dataset with missing IDs removed, 
-# `dd2`. 
-# First, make a between (BEnergy) and within (WEnergy) variable of dEnergy:
-dd[!is.na(ID), c("???", "???") := ???(dEnergy), by = ???]
-head(dd[!is.na(ID), .(???, ???, ???, ID)])
+aggr(???)
 
-# Second, assess distribution of within energy. 
-# If needed, excluded rows / IDs (make extreme value threshold 0.5%). 
-plot(testDistribution(dd[!is.na(ID)]$???,
-                      extremevalues = "theoretical", ev.perc = ???),
-     varlab = "???")
+# Which variables don't have any missing data? 
 
-dd2 <- dd[!is.na(ID)]
-testDistribution(dd2$???,
-                 extremevalues = "theoretical", ev.perc = ???)$Data[isEV == "???"]
+# A: 
 
-# Show and remove the outliers based on row number ("OriginalOrder"):
-dd2[c(???, ???, ???, ???, ???, ???), .(dEnergy, BEnergy, WEnergy, SurveyDay, ID)]
-dd.noev <- dd2[-c(???, ???, ???, ???, ???, ???)]
+# What percentage of the observations aren't missing any data?
 
-plot(testDistribution(???$???,
-                      extremevalues = "theoretical", ev.perc = ???), 
-     varlab = "???")
+# A:  
 
-# Now recreate between and within levels of energy on the dataset 
-# without extreme within values.
-???[, c("???", "???") := ???(dEnergy), by = ???]
+# Make a marginplot comparing missingness of dLoneliness to the values of dMood
+???
 
-# Make a dataset with only one row of data per person to clean the between level
-dd.b <- ???[!duplicated(ID)]
+# Does there seem to be much association?
+# A: 
 
-# Examine the distribution of the between level and remove any outliers/IDs
-plot(testDistribution(dd.b$???,
-                      extremevalues = "theoretical", ev.perc = ???),
-     varlab = "???")
+# To do MI, we have to make sure the class of all the variables are correct.
+# Because they were imported from SPSS, they're all wrong. How do we change them?
+# if these are problems usually you can convert to numeric/integer/factor like
+# d[, v := as.numeric(v)]
+# d[, v := as.integer(v)]
+# d[, v := as.factor(v)]
+???
 
-testDistribution(dd.b$???,
-                 extremevalues = "theoretical", ev.perc = ???)$Data[isEV == "???"]
-dd.b[c(???), .(dEnergy, BEnergy, WEnergy, SurveyDay, ID)]
-dd.b.noev <- ???[-c(???)]
-plot(testDistribution(???$???,
-                      extremevalues = "theoretical", ev.perc = ???),
-     varlab = "???")
+### FROM HERE ONWARDS, ANSWERS WILL NOT BE UPLOADED, AS THEY ARE TOO SIMILAR 
+### TO YOUR LAB REPORTS. I WILL HELP YOU IN CLASS BUT I CAN'T GIVE THE ANSWERS
+
+# Multiply impute the dataset with 5 MI datasets and 30 iterations.
+# Bonus: Make me get the same results if you were to give me the seed 666
+mi.ddsub <- mice(
+  ???)
+
+## plot convergence diagnostics for dLoneliness
+plot(???)
+
+# use the with() and pool() functions to run a linear regression where 
+# loneliness predicts mood
+???
+???
+
+# For every one unit change in daily loneliness, 
+# mood ___creased by ____ units, p _____
+
+#A: 

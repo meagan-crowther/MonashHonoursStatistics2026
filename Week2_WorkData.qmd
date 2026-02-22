@@ -64,7 +64,7 @@ format:
 # Intro
 
 Please make sure that you have downloaded the Quarto file (.qmd) for the lecture by pulling the most recent git repo
-<https://github.com/JWiley/MonashHonoursStatistics/blob/master/Week2_WorkData.qmd>
+<https://github.com/meagan-crowther/MonashHonoursStatistics2026/blob/master/Week2_WorkData.qmd>
 You can follow along with the pre-recorded lecture videos for Week 2, or you can read this markdown (in HTML format) independently, and follow along by executing the code in R Studio using the markdown (qmd) file.
 
 # Basic `R` Use

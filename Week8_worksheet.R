@@ -1,81 +1,79 @@
-######### WEEK 8 WORKSHEET - LMM 1 #########
+####### WORKSHEET - Mediation #######
 
 library(data.table)
 library(JWileymisc)
-library(lme4)
-library(lmerTest)
-library(multilevelTools)
-library(visreg)
-library(ggplot2)
-library(ggpubr)
-library(haven)
-
-## Set your working directory to the folder that has the datafiles.
-## "Merged" is a a merged long dataset of both baseline and daily diary
-dm <- as.data.table(read_sav("[2021] PSY4210 merged.sav"))
-
-# Make a descriptive statistics table for the following variables:
-
-# relsta (measured baseline only; categorical)
-# openness (measured baseline; continuous)
-# agreeableness (measured baseline; continuous)
-# dEnergy (measured daily; continuous, create average levels)
-# Int_Fam (measured daily; categorical)
-
-dm[, c("???", "???") := meanDeviations(???), by = ???]
-
-desc1 <- egltable(c("???", "???", "???", "???"),
-                  data = dm[!duplicated(ID)], strict = FALSE)
-desc2 <-   egltable(c("???"), data = dm, strict = FALSE)
-setnames(desc1, c("", "M (SD)/N (%)"))
-setnames(desc2, c("", "M (SD)/N (%)"))
-rbind(desc1, desc2)
-
-# Intercept only model:
-dm[, dEnergy := as.numeric(dEnergy)]
-
-# Like last week, fit a random intercept model predicting 'dEnergy'. 
-## store the model results in an object called "m2lmm" 
-# (hint we did this in the worksheet last week)
-m2lmm <- ???(??? ~ ??? + (??? | ???), data = ???)
-
-## now make a summary of the model results
-???(m2lmm)
-
-## look at model diagnostics here
-plot(???(???), ncol = 2, nrow = 2, ask = FALSE)
-
-###### ANSWERS BELOW WILL NOT BE GIVEN AS THEY'RE TOO SIMILAR TO LAB REPORT
-
-## what is the intraclass correlation coefficient for this dEnergy?
-???("???", id = "???", data = ???)
-
-# Fill in the blanks:
-# About ____% of the total variance in energy was between people and the 
-# other ____% is within person due to ________________.
+library(lavaan)
 
 
-# Fit a model predicting energy from a random intercept
-# and the fixed effect of daily anxiety (dANX). Include a summary and CIs.
-m3lmm <- ???(??? ~ ??? + (??? | ???), data = ???)
-summary(???)
-confint(???, method = "profile", oldNames = FALSE)
+# We are going to create our own data here
+set.seed(123) ## Do not change this or you will get a different data set
 
-# Fill in the blanks:
+N <- 200
+X <- rnorm(N)
+M <- 0.7 * X + rnorm(N, sd = 0.3)
+Y <- 0.8 * M + rnorm(N, sd = 0.3)
 
-# To examine the association of ____ and ____, a linear mixed model was fit. 
-# The final model included ____ energy scores from ____ people.
-# The fixed effect intercept revealed that the average [95% CI] energy when 
-# anxiety is 0 was ____ [____, ____]. However, there were individual 
-# differences, with the standard deviation for the random intercept being 
-# ____ indicating that there are individual differences in the mean energy. 
-# Assuming the random intercepts follow a normal distribution, we expect most 
-# people to fall within one standard deviation of the mean, which in these data 
-# would be somewhere between: ____, ____. 
-# Using Satterthwaite's approximation for degrees of freedom revealed that 
-# anxiety ____ statistically significantly associated with energy (p ____). 
-# On average across people, a one unit higher anxiety score was associated 
-# with ____ __crease in energy scores
+d <- data.table(
+  gpa = X,
+  selfesteem = M,
+  happiness = Y
+)
 
 
+#We will specify our model
+mod_med <- "
+  # a path: X -> M
+  selfesteem ~ a*gpa
 
+  # b path and direct effect: M -> Y and X -> Y
+  happiness ~ b*selfesteem + cp*gpa
+
+  # indirect, direct, total effects, and proportion mediated
+  indirect := a*b
+  direct   := cp
+  total    := direct + indirect
+  prop     := indirect / total
+"
+
+fit_med <- lavaan::sem(mod_med, data = d, meanstructure = TRUE)
+
+summary(fit_med, standardized = TRUE, rsquare = TRUE)
+
+## From this summary remember to look at the a pathway, b pathway and cprime
+## We also want look at the direct and indirect effects.
+
+## Bootstrapping confidence intervals
+set.seed(1234)
+
+fit_med_boot <- lavaan::sem(
+  mod_med,
+  data = d,
+  meanstructure = TRUE,
+  se = "bootstrap",
+  bootstrap = 100
+)
+
+# Percentile bootstrap CIs
+pe_boot <- parameterEstimates(
+  fit_med_boot,
+  ci = TRUE,
+  level = 0.95,
+  boot.ci.type = "perc"
+)
+
+# Show the bootstrap CIs for the defined effects
+pe_boot[pe_boot$lhs %in% c("indirect", "direct", "total", "prop_med"),
+        c("lhs", "est", "se", "ci.lower", "ci.upper")]
+
+# Which (if any) of these bootstrapped confidence intervals indicate significant relationships? (Hint. do any of them not cross zero?)
+# A:
+
+
+## Let's look at all the output together and have a go a interpreting our model:
+
+# To examine whether ___ statistically mediates the association between ___ and ___, a simple mediation model was estimated using the ____ package.
+# The predictor, ____, was/was not significantly associated with the mediator, (path a: β = ____, p = ____). 
+# The mediator was/ was not significantly associated with the outcome,  ____ ____ (path b: β = ____, p = ____).
+# The indirect effect (a x b) was β = ____ with a bootstrapped 95% CI of [___,___], indicating that the mediation effect was/was not statistically significant.
+# The direct effect of ___ on ___ remained statistically significant/not significant (β = ____, p = ____), suggesting that the mediation was partial/full/absent.
+# Overall, these results indicate that individuals higher in ___ tend to report ___ levels of ___, in part because they also report ____ levels of ___.
