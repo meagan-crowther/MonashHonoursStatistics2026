@@ -9,7 +9,7 @@
 <meta name="author" content="Kristy Chong">
 <meta name="author" content="Meagan E. Crowther">
 <meta name="author" content="Joshua F. Wiley">
-<meta name="dcterms.date" content="2026-02-22">
+<meta name="dcterms.date" content="2026-02-24">
 
 <title>PSY4210: Mediation Analysis</title>
 <style>
@@ -3651,7 +3651,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 22, 2026</p>
+      <p class="date">February 24, 2026</p>
     </div>
   </div>
   
@@ -3742,8 +3742,8 @@ window.Quarto = {
 <p>The basic mediation diagram is:</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-870e601fb34d8fa4be41" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-870e601fb34d8fa4be41">{"x":{"diagram":"\ndigraph mediation_basic {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\"]\n  M [label = \"Self-esteem (M)\"]\n  Y [label = \"Stress (Y)\"]\n\n  X -> M [label = \"a\"]\n  M -> Y [label = \"b\"]\n  X -> Y [label = \"cp (direct)\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-15fff1753469bbfc5797" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-15fff1753469bbfc5797">{"x":{"diagram":"\ndigraph mediation_basic {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\"]\n  M [label = \"Self-esteem (M)\"]\n  Y [label = \"Stress (Y)\"]\n\n  X -> M [label = \"a\"]\n  M -> Y [label = \"b\"]\n  X -> Y [label = \"cp (direct)\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>In this diagram:</p>
@@ -3763,8 +3763,8 @@ window.Quarto = {
 <p>One way to visualize the ideal measurement ordering is:</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-62317b4db9a1d9eee4c5" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-62317b4db9a1d9eee4c5">{"x":{"diagram":"\ndigraph mediation_time {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\\nTime 1\"]\n  M [label = \"Self-esteem (M)\\nTime 2\"]\n  Y [label = \"Stress (Y)\\nTime 3\"]\n\n  X -> M\n  M -> Y\n  X -> Y [style = dashed, label = \"possible\\ndirect path\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-eb22d5be946d303d82cc" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-eb22d5be946d303d82cc">{"x":{"diagram":"\ndigraph mediation_time {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\\nTime 1\"]\n  M [label = \"Self-esteem (M)\\nTime 2\"]\n  Y [label = \"Stress (Y)\\nTime 3\"]\n\n  X -> M\n  M -> Y\n  X -> Y [style = dashed, label = \"possible\\ndirect path\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -3825,8 +3825,8 @@ c = cp + ab
 <h3 data-number="2.5.1" class="anchored" data-anchor-id="total-effect-versus-decomposition-diagram"><span class="header-section-number">2.5.1</span> Total effect versus decomposition (diagram)</h3>
 <div class="cell">
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-bcb0d654695d710e4abf" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-bcb0d654695d710e4abf">{"x":{"diagram":"\ndigraph mediation_total {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\"]\n  M [label = \"Self-esteem (M)\"]\n  Y [label = \"Stress (Y)\"]\n\n  X -> Y [label = \"c (total)\"]\n\n  X -> M [label = \"a\", color = gray40]\n  M -> Y [label = \"b\", color = gray40]\n  X -> Y [label = \"cp (direct)\", color = gray40]\n\n  lab [shape = plaintext, label = \"c = cp + a×b\"]\n  {rank = same; lab;}\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-573af80703a5f74fe97a" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-573af80703a5f74fe97a">{"x":{"diagram":"\ndigraph mediation_total {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\"]\n  M [label = \"Self-esteem (M)\"]\n  Y [label = \"Stress (Y)\"]\n\n  X -> Y [label = \"c (total)\"]\n\n  X -> M [label = \"a\", color = gray40]\n  M -> Y [label = \"b\", color = gray40]\n  X -> Y [label = \"cp (direct)\", color = gray40]\n\n  lab [shape = plaintext, label = \"c = cp + a×b\"]\n  {rank = same; lab;}\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -3847,8 +3847,8 @@ c = cp + ab
 <p>These assumptions are strong. A simple way to visualize the concern is that an unmeasured variable <span class="math inline">\(U\)</span> could cause both the mediator and the outcome, creating spurious evidence for an indirect pathway. In our data, imagine perhaps having very strict and critical parents (U) could lead to both lower self-esteem (M) and higher stress (Y). Thus even if we correctly estimate a causal effect of neuroticism on self-esteem, the self-esteem to stress path may be confounded, resulting in a biased estimate of the causal indirect effect and us (wrongly) concluding that self-esteem mediates the effect of neuroticism on stress.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-ca1d6aaf24b9fb4c62a3" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-ca1d6aaf24b9fb4c62a3">{"x":{"diagram":"\ndigraph mediation_confounding {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\"]\n  M [label = \"Self-esteem (M)\"]\n  Y [label = \"Stress (Y)\"]\n  U [label = \"Unmeasured\\nconfounder (U)\", shape = ellipse, style = dashed]\n\n  X -> M [label = \"a\"]\n  M -> Y [label = \"b\"]\n  X -> Y [label = \"cp\"]\n  U -> M [style = dashed]\n  U -> Y [style = dashed]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-9e5df1d24979e1c92a0d" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-9e5df1d24979e1c92a0d">{"x":{"diagram":"\ndigraph mediation_confounding {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\"]\n  M [label = \"Self-esteem (M)\"]\n  Y [label = \"Stress (Y)\"]\n  U [label = \"Unmeasured\\nconfounder (U)\", shape = ellipse, style = dashed]\n\n  X -> M [label = \"a\"]\n  M -> Y [label = \"b\"]\n  X -> Y [label = \"cp\"]\n  U -> M [style = dashed]\n  U -> Y [style = dashed]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>Finally, it can be helpful to consider a few common misunderstandings about mediation analyses.</p>
@@ -4050,7 +4050,7 @@ neuroticism  1.1        0.527      0.737      1.26</code></pre>
 <p>In lavaan syntax, regressions use <code>~</code>, just like other linear models using <code>lm()</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mod_reg <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="st">  neuroticism ~ stress</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="st">  stress ~ neuroticism</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>fit_reg <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">sem</span>(mod_reg, <span class="at">data =</span> db)</span>
@@ -4079,39 +4079,39 @@ Parameter Estimates:
 
 Regressions:
                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-  neuroticism ~                                                         
-    stress            0.209    0.031    6.683    0.000    0.209    0.490
+  stress ~                                                              
+    neuroticism       1.149    0.172    6.683    0.000    1.149    0.490
 
 Variances:
                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-   .neuroticism       0.912    0.109    8.396    0.000    0.912    0.759
+   .stress            5.003    0.596    8.396    0.000    5.003    0.759
 
 R-Square:
                    Estimate
-    neuroticism       0.241</code></pre>
+    stress            0.241</code></pre>
 </div>
 </div>
 <p>This is (conceptually) the same model you would fit using:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>m_reg <span class="ot">&lt;-</span> <span class="fu">lm</span>(neuroticism <span class="sc">~</span> stress, <span class="at">data =</span> db)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>m_reg <span class="ot">&lt;-</span> <span class="fu">lm</span>(stress <span class="sc">~</span> neuroticism, <span class="at">data =</span> db)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m_reg)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = neuroticism ~ stress, data = db)
+lm(formula = stress ~ neuroticism, data = db)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--2.2797 -0.6172  0.0453  0.7203  2.1390 
+   Min     1Q Median     3Q    Max 
+-4.930 -1.483 -0.206  1.794  5.368 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)   1.3954     0.3336    4.18  5.1e-05 ***
-stress        0.2094     0.0316    6.64  6.7e-10 ***
+(Intercept)    6.185      0.642    9.63  &lt; 2e-16 ***
+neuroticism    1.149      0.173    6.64  6.7e-10 ***
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 
-Residual standard error: 0.962 on 139 degrees of freedom
+Residual standard error: 2.25 on 139 degrees of freedom
   (1 observation deleted due to missingness)
 Multiple R-squared:  0.241, Adjusted R-squared:  0.235 
 F-statistic:   44 on 1 and 139 DF,  p-value: 6.66e-10</code></pre>
@@ -4119,10 +4119,10 @@ F-statistic:   44 on 1 and 139 DF,  p-value: 6.66e-10</code></pre>
 </div>
 <section id="multiple-regression-in-lavaan-brief" class="level3" data-number="4.0.1">
 <h3 data-number="4.0.1" class="anchored" data-anchor-id="multiple-regression-in-lavaan-brief"><span class="header-section-number">4.0.1</span> Multiple regression in lavaan (brief)</h3>
-<p>Because lavaan can estimate multiple regressions simultaneously, it is also convenient for ordinary multiple regression. For example, this is the same model as <code>lm(neuroticism ~ stress + selfesteem)</code>:</p>
+<p>Because lavaan can estimate multiple regressions simultaneously, it is also convenient for ordinary multiple regression. For example, this is the same model as <code>lm(stress ~ neuroticism + selfesteem)</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mod_mr <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="st">  neuroticism ~ stress + selfesteem</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="st">  stress ~ neuroticism + selfesteem</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>fit_mr <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">sem</span>(mod_mr, <span class="at">data =</span> db)</span>
@@ -4150,17 +4150,17 @@ Parameter Estimates:
 
 Regressions:
                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-  neuroticism ~                                                         
-    stress            0.184    0.041    4.452    0.000    0.184    0.431
-    selfesteem       -0.130    0.138   -0.941    0.347   -0.130   -0.091
+  stress ~                                                              
+    neuroticism       0.670    0.151    4.452    0.000    0.670    0.286
+    selfesteem       -1.835    0.215   -8.530    0.000   -1.835   -0.548
 
 Variances:
                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-   .neuroticism       0.906    0.108    8.396    0.000    0.906    0.755
+   .stress            3.300    0.393    8.396    0.000    3.300    0.501
 
 R-Square:
                    Estimate
-    neuroticism       0.245</code></pre>
+    stress            0.499</code></pre>
 </div>
 </div>
 </section>
@@ -4200,21 +4200,21 @@ Parameter Estimates:
 
 Regressions:
                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-  neuroticism ~                                                         
-    stress            0.184    0.041    4.452    0.000    0.184    0.431
-    selfesteem       -0.130    0.138   -0.941    0.347   -0.130   -0.091
+  stress ~                                                              
+    neuroticism       0.670    0.151    4.452    0.000    0.670    0.286
+    selfesteem       -1.835    0.215   -8.530    0.000   -1.835   -0.548
 
 Intercepts:
                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-   .neuroticism       2.113    0.831    2.542    0.011    2.113    1.929
+   .stress           14.323    1.086   13.195    0.000   14.323    5.581
 
 Variances:
                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-   .neuroticism       0.906    0.108    8.396    0.000    0.906    0.755
+   .stress            3.300    0.393    8.396    0.000    3.300    0.501
 
 R-Square:
                    Estimate
-    neuroticism       0.245</code></pre>
+    stress            0.499</code></pre>
 </div>
 </div>
 <p>Now that we have seen some lavaan basics, we can setup our mediation model. Here are some steps for us to consider as we set up for mediation.</p>
@@ -4321,8 +4321,8 @@ Defined Parameters:
 <p>Mediation results often are reported in diagrams. The code below extracts the estimated paths and prints a diagram with the numeric values.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-f75f2477b1344977f853" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-f75f2477b1344977f853">{"x":{"diagram":"\ndigraph mediation_est {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\"]\n  M [label = \"Self-esteem (M)\"]\n  Y [label = \"Stress (Y)\"]\n\n  X -> M [label = \"a = -0.261\"]\n  M -> Y [label = \"b = -1.835\"]\n  X -> Y [label = \"cp = 0.670\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-1d86fd812e6935426b7d" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-1d86fd812e6935426b7d">{"x":{"diagram":"\ndigraph mediation_est {\n  graph [rankdir = LR]\n  node  [shape = rectangle, style = filled]\n\n  X [label = \"Neuroticism (X)\"]\n  M [label = \"Self-esteem (M)\"]\n  Y [label = \"Stress (Y)\"]\n\n  X -> M [label = \"a = -0.261\"]\n  M -> Y [label = \"b = -1.835\"]\n  X -> Y [label = \"cp = 0.670\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -4367,7 +4367,7 @@ Defined Parameters:
 12    total 1.149 0.188    0.814    1.549</code></pre>
 </div>
 </div>
-<p>If the bootstrapped confidence interval for the indirect effect (or any others) does not cross zero, we would say it is statistically significant at the 0.05 level. The 0.05 level because we asked for 95% confidence itnervals with <code>level = 0.95</code>. You can change that if you want.</p>
+<p>If the bootstrapped confidence interval for the indirect effect (or any others) does not cross zero, we would say it is statistically significant at the 0.05 level. The 0.05 level because we asked for 95% confidence intervals with <code>level = 0.95</code>. You can change that if you want.</p>
 </section>
 <section id="optional-some-references" class="level1" data-number="8">
 <h1 data-number="8"><span class="header-section-number">8</span> Optional: Some references</h1>

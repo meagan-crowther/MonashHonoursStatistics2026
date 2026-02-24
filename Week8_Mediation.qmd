@@ -478,7 +478,7 @@ In lavaan syntax, regressions use `~`, just like other linear models using `lm()
 ```{r lavaan-simple-regression}
 
 mod_reg <- "
-  neuroticism ~ stress
+  stress ~ neuroticism
 "
 
 fit_reg <- lavaan::sem(mod_reg, data = db)
@@ -491,7 +491,7 @@ This is (conceptually) the same model you would fit using:
 
 ```{r lm-simple-regression}
 
-m_reg <- lm(neuroticism ~ stress, data = db)
+m_reg <- lm(stress ~ neuroticism, data = db)
 summary(m_reg)
 
 ```
@@ -499,12 +499,12 @@ summary(m_reg)
 ### Multiple regression in lavaan (brief)
 
 Because lavaan can estimate multiple regressions simultaneously, it is also convenient for ordinary
-multiple regression. For example, this is the same model as `lm(neuroticism ~ stress + selfesteem)`:
+multiple regression. For example, this is the same model as `lm(stress ~ neuroticism + selfesteem)`:
 
 ```{r lavaan-multiple-regression}
 
 mod_mr <- "
-  neuroticism ~ stress + selfesteem
+  stress ~ neuroticism + selfesteem
 "
 
 fit_mr <- lavaan::sem(mod_mr, data = db)
@@ -710,7 +710,7 @@ pe_boot[pe_boot$lhs %in% c("indirect", "direct", "total", "prop_med"),
 
 If the bootstrapped confidence interval for the indirect effect
 (or any others) does not cross zero, we would say it is statistically significant at the 0.05 level.
-The 0.05 level because we asked for 95% confidence itnervals with `level = 0.95`. You can change that if you want.
+The 0.05 level because we asked for 95% confidence intervals with `level = 0.95`. You can change that if you want.
 
 # Optional: Some references
 

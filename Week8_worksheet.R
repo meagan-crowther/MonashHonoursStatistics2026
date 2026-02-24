@@ -23,16 +23,16 @@ d <- data.table(
 #We will specify our model
 mod_med <- "
   # a path: X -> M
-  selfesteem ~ a*gpa
+  ??? ~ a*???
 
   # b path and direct effect: M -> Y and X -> Y
-  happiness ~ b*selfesteem + cp*gpa
+  ??? ~ b*??? + cp*???
 
   # indirect, direct, total effects, and proportion mediated
-  indirect := a*b
-  direct   := cp
-  total    := direct + indirect
-  prop     := indirect / total
+  indirect := ???*???
+  direct   := ???
+  total    := ??? + ???
+  prop     := ??? / ???
 "
 
 fit_med <- lavaan::sem(mod_med, data = d, meanstructure = TRUE)
