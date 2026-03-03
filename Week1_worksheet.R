@@ -126,7 +126,11 @@ library(data.table)
 ## this will run some setwd() code in your console,
 ## which you can copy and paste here
 ## Note: For PC the / need to be reversed - if your working directory copies with this direction / and you are getting errors, change them to \
+<<<<<<< HEAD
 setwd("C:/MonashHonoursStatistics2026-copy")
+=======
+setwd("C:/MonashHonoursStatistics2026")
+>>>>>>> origin/master
 d <- read.csv("IntroR_sample.csv")
 
 # (When you have more time, also install package "tidyverse"
