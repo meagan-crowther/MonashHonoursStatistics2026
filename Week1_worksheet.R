@@ -127,7 +127,7 @@ library(data.table)
 ## which you can copy and paste here
 ## Note: For PC the / need to be reversed - if your working directory copies with this direction / and you are getting errors, change them to \
 setwd("C:/MonashHonoursStatistics2026")
-d <- read.csv("data/IntroR_sample.csv")
+d <- read.csv("IntroR_sample.csv")
 
 # (When you have more time, also install package "tidyverse"
 # - it takes a while)
