@@ -70,10 +70,10 @@ mean(y, na.rm = TRUE)
 ## find the mean of these numbers: 5, 3, 2, 9, 1
 ???
   
-  ## find the standard deviation of the variable "y"
-  ???
+## find the standard deviation of the variable "y"
+???
   
-  #### 3. Using a Dataset ####
+#### 3. Using a Dataset ####
 
 ## R has a built in dataset called "mtcars"
 ## this dataset has variables on about 32 different cars
@@ -104,8 +104,8 @@ round(mtcars$mpg, digits = 0)
 ## variable mpg
 ???
   
-  ## How do you get a summary of a whole dataset? Use google or the ? function
-  ???
+## How do you get a summary of a whole dataset? Use google or the ? function
+???
   
   #### 4. Loading Data ####
 
@@ -126,8 +126,8 @@ library(data.table)
 ## this will run some setwd() code in your console,
 ## which you can copy and paste here
 ## Note: For PC the / need to be reversed - if your working directory copies with this direction / and you are getting errors, change them to \
-setwd("C:/MonashHonoursStatistics2026")
-d <- read.csv("data/IntroR_sample.csv")
+setwd("C:/MonashHonoursStatistics2026-copy")
+d <- read.csv("IntroR_sample.csv")
 
 # (When you have more time, also install package "tidyverse"
 # - it takes a while)
@@ -162,8 +162,8 @@ d$zStress[c(1, 3)]
 ## YOU TRY IT: What is the 10th value?
 ???
   
-  ## here are just the values of zStress where Depressed == 1
-  d$zStress[d$Depressed == 1]
+## here are just the values of zStress where Depressed == 1
+d$zStress[d$Depressed == 1]
 
 ## here are just the values of zStress where zStress > 1
 d$zStress[d$zStress > 1]
