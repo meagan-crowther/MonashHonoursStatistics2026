@@ -105,6 +105,7 @@ library(ggpubr)
 library(ggthemes)
 library(scales)
 library(ggExtra)
+library(Hmisc)
 
 ## turn off some notes from R in the final HTML document
 knitr::opts_chunk$set(message = FALSE)
