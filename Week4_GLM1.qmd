@@ -1031,12 +1031,12 @@ show what could be interpreted if there was a significant
 interaction, we will proceed.
 There was a significant simple effect of stress
 on neuroticism, such that for male participants (i.e., when sexfemales =
-0), each one unit higher stress was associated with 0.44 higher
-neuroticism [95% CI .15 - .73], p = .003 and this was a small
+0), each one unit higher stress was associated with 0.22 higher
+neuroticism [95% CI 0.08 - 0.36], p = .003 and this was a small
 effect, $f^2 = 0.07$. There was no simple effect
-of sex on neuroticism when stress was held at 0, (b = 2.73, [95%
-CI -0.44 - 5.90], p = .091) and the effect size was small, $f^2 =
-.02$. The interaction was not significant, and a graph of the
+of sex on neuroticism when stress was held at 0, (b = 1.37, [95%
+CI -0.22 - 2.95], p = .091) and the effect size was small, $f^2 = 0.02$. 
+The interaction was not significant, and a graph of the
 interaction showed that the pattern was that the association between
 stress and neuroticism was about the same in male and female participants.
 The overall model explained 37% of the variance in neuroticism
