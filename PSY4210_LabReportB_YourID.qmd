@@ -42,8 +42,4 @@ library(visreg)
 
 
 
-# 6. Interactions and Moderation for LMMs
-
-
-
 
